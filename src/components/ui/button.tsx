@@ -5,16 +5,16 @@ type Size = "sm" | "md" | "lg" | "xl";
 
 const variantClasses: Record<Variant, string> = {
   primary: "bg-teal text-white hover:bg-teal-dark active:bg-teal-dark shadow-sm",
-  secondary: "bg-white text-foreground border border-card-border hover:bg-gray-50 active:bg-gray-100",
-  ghost: "text-muted hover:text-foreground hover:bg-gray-100",
-  accent: "bg-coral text-white hover:bg-coral-light active:bg-coral shadow-sm",
+  secondary: "bg-white text-foreground border-2 border-card-border hover:border-muted active:bg-gray-50",
+  ghost: "text-muted hover:text-foreground hover:bg-black/5",
+  accent: "bg-primary text-white hover:bg-primary-light active:bg-primary-dark shadow-sm",
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "px-3 py-1.5 text-sm rounded-lg",
-  md: "px-4 py-2 text-sm rounded-lg",
-  lg: "px-6 py-3 text-base rounded-xl",
-  xl: "px-8 py-4 text-lg rounded-2xl",
+  sm: "px-4 py-2 text-sm rounded-lg",
+  md: "px-5 py-2.5 text-sm rounded-lg",
+  lg: "px-6 py-3 text-base rounded-lg",
+  xl: "px-8 py-4 text-base rounded-lg",
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -34,8 +34,8 @@ export function Button({
   return (
     <button
       className={`
-        inline-flex items-center justify-center font-semibold transition-colors
-        disabled:opacity-50 disabled:pointer-events-none
+        inline-flex items-center justify-center font-bold tracking-wide uppercase transition-all
+        disabled:opacity-40 disabled:pointer-events-none
         ${variantClasses[variant]}
         ${sizeClasses[size]}
         ${fullWidth ? "w-full" : ""}

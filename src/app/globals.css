@@ -1,13 +1,5 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: "Stonin";
-  src: url("/fonts/stonin.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @theme inline {
   --color-primary: #7B5EA7;
   --color-primary-light: #9474BF;
@@ -18,29 +10,23 @@
   --color-coral: #E8643B;
   --color-coral-light: #F0845F;
   --color-cream: #F2EDE0;
-  --color-accent: #E8643B;
-  --color-accent-light: #F0845F;
+  --color-accent: #7B5EA7;
+  --color-accent-light: #9474BF;
   --color-success: #22c55e;
   --color-error: #ef4444;
   --color-background: #F2EDE0;
-  --color-foreground: #2D2A3E;
-  --color-muted: #7A778A;
+  --color-foreground: #1a1a2e;
+  --color-muted: #8a8a9a;
   --color-card: #ffffff;
-  --color-card-border: #E5E0D5;
-  --font-display: "Stonin", system-ui, sans-serif;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card-border: #e0dbd0;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", monospace;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
-}
-
-h1, h2, h3 {
-  font-family: var(--font-display);
-  letter-spacing: 0.02em;
+  font-family: var(--font-sans);
 }
 
 .leaflet-container {
@@ -50,14 +36,10 @@ h1, h2, h3 {
 }
 
 @keyframes slide-up {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 .animate-slide-up {
-  animation: slide-up 0.3s ease-out;
+  animation: slide-up 0.25s ease-out;
 }

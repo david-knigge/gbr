@@ -26,20 +26,20 @@ export default function RaceInfoPage() {
       </div>
 
       {/* Event header overlay */}
-      <div className="absolute top-3 left-3 z-[1000] bg-cream/95 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg flex items-center gap-2.5 border border-coral/30">
+      <div className="absolute top-4 left-4 z-[1000] bg-white/95 backdrop-blur-sm rounded-lg px-4 py-3 shadow-lg flex items-center gap-3">
         <Image
           src="/logo-square.png"
           alt="Great Benicia Run"
-          width={40}
-          height={40}
-          className="rounded-full"
+          width={44}
+          height={44}
+          className="rounded-lg"
         />
         <div>
-          <h1 className="text-sm text-primary leading-tight">
+          <h1 className="text-base font-bold text-foreground leading-tight tracking-tight">
             The Great Benicia Run
           </h1>
-          <p className="text-[10px] text-coral font-medium tracking-wide uppercase">
-            Strait to the Finish
+          <p className="text-xs text-muted font-medium">
+            Strait to the Finish — May 18, 2026
           </p>
         </div>
       </div>
@@ -47,8 +47,7 @@ export default function RaceInfoPage() {
       {/* Donate FAB */}
       <button
         onClick={() => setDonateOpen(true)}
-        className="absolute bottom-16 right-3 z-[1000] bg-coral text-cream px-5 py-3 rounded-full shadow-lg hover:bg-coral-light active:bg-coral transition-colors font-bold text-sm flex items-center gap-2 border-2 border-cream/30"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="absolute bottom-18 right-4 z-[1000] bg-primary text-white px-5 py-3 rounded-lg shadow-lg hover:bg-primary-light active:bg-primary-dark transition-all font-bold text-sm uppercase tracking-wide flex items-center gap-2"
       >
         <svg
           className="w-5 h-5"

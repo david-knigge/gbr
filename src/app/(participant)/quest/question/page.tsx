@@ -57,16 +57,24 @@ function QuestionContent() {
   if (result) {
     const totalEarned = entriesFromScan + result.entries_awarded;
     return (
-      <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-4 pt-6 space-y-4 pb-20">
-        <div className="text-center space-y-2">
+      <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-5 pt-8 space-y-5 pb-24">
+        <div className="text-center">
           {result.is_correct ? (
             <>
-              <div className="text-5xl">&#10003;</div>
+              <div className="w-16 h-16 rounded-lg bg-success/10 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-8 h-8 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
               <h1 className="text-2xl font-bold text-success">Correct!</h1>
             </>
           ) : (
             <>
-              <div className="text-5xl">&#128170;</div>
+              <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
               <h1 className="text-2xl font-bold text-foreground">Nice try!</h1>
             </>
           )}
@@ -79,82 +87,84 @@ function QuestionContent() {
         </Card>
 
         <Card className="text-center">
-          <div className="text-3xl font-bold text-teal">+{totalEarned}</div>
-          <div className="text-sm text-muted mt-1">
+          <div className="text-4xl font-bold text-teal">+{totalEarned}</div>
+          <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
             Raffle Entries Earned
           </div>
           {entriesFromScan > 0 && (
-            <p className="text-xs text-muted mt-2">
+            <p className="text-sm text-muted mt-3">
               {entriesFromScan} from scan{result.entries_awarded > 0 ? ` + ${result.entries_awarded} for correct answer` : ""}
             </p>
           )}
           {milestone && (
-            <p className="text-xs text-accent font-semibold mt-1">
-              + {milestone} bonus entries for milestone!
+            <p className="text-sm text-primary font-bold mt-1">
+              +{milestone} bonus entries for milestone!
             </p>
           )}
-          <div className="mt-3 text-sm text-muted">
-            Total: <span className="font-bold text-foreground">{result.new_total}</span> entries
+          <div className="mt-4 pt-3 border-t border-card-border text-sm text-muted">
+            Total: <span className="font-bold text-foreground text-lg">{result.new_total}</span> entries
           </div>
         </Card>
 
-        <Button
-          variant="primary"
-          size="lg"
-          fullWidth
-          onClick={() => router.push("/quest")}
-        >
-          Continue
-        </Button>
+        <div className="space-y-3">
+          <Button
+            variant="primary"
+            size="lg"
+            fullWidth
+            onClick={() => router.push("/quest")}
+          >
+            Continue
+          </Button>
 
-        <Button
-          variant="secondary"
-          size="lg"
-          fullWidth
-          onClick={() => router.push("/quest/scan")}
-        >
-          Scan Next Checkpoint
-        </Button>
+          <Button
+            variant="secondary"
+            size="lg"
+            fullWidth
+            onClick={() => router.push("/quest/scan")}
+          >
+            Scan Next Checkpoint
+          </Button>
+        </div>
       </div>
     );
   }
 
   // Show question
   return (
-    <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-4 pt-6 space-y-4 pb-20">
+    <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-5 pt-8 space-y-5 pb-24">
       <div className="text-center">
-        <p className="text-xs text-teal font-semibold uppercase tracking-wide">
+        <p className="text-xs font-bold text-teal uppercase tracking-widest">
           {checkpointName}
         </p>
         {entriesFromScan > 0 && (
-          <p className="text-sm text-success font-medium mt-1">
-            +{entriesFromScan} entries from scan!
+          <p className="text-sm text-success font-bold mt-2">
+            +{entriesFromScan} entries from scan
           </p>
         )}
       </div>
 
       <Card>
-        <h2 className="text-lg font-semibold text-foreground leading-snug">
+        <h2 className="text-lg font-bold text-foreground leading-snug">
           {prompt}
         </h2>
       </Card>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {answers.map((answer) => (
           <button
             key={answer.key}
             onClick={() => setSelectedAnswer(answer.key)}
-            className={`w-full text-left p-4 rounded-xl border-2 transition-all text-sm font-medium ${
+            className={`w-full text-left p-4 rounded-lg border-2 transition-all text-sm font-medium flex items-center gap-3 ${
               selectedAnswer === answer.key
-                ? "border-primary bg-primary/5 text-foreground"
-                : "border-card-border bg-card text-foreground hover:border-gray-300"
+                ? "border-teal bg-teal/5 text-foreground"
+                : "border-card-border bg-card text-foreground hover:border-muted"
             }`}
           >
-            <span className="inline-block w-6 h-6 rounded-full border-2 text-center text-xs leading-5 mr-3 font-bold uppercase ${
+            <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold uppercase shrink-0 ${
               selectedAnswer === answer.key
-                ? 'border-primary text-teal'
-                : 'border-gray-300 text-muted'
-            }">
+                ? "bg-teal text-white"
+                : "bg-cream text-muted"
+            }`}>
               {answer.key}
             </span>
             {answer.text}
@@ -177,7 +187,7 @@ function QuestionContent() {
 
 export default function QuestionPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-pulse text-muted">Loading...</div></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-pulse text-muted font-medium">Loading...</div></div>}>
       <QuestionContent />
     </Suspense>
   );

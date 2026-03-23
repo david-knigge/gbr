@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useUser } from "@/contexts/user-context";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DonateOverlay } from "@/components/donate-overlay";
 
@@ -13,7 +12,7 @@ const RaceMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-full bg-teal/10 animate-pulse" />
+      <div className="w-full h-full bg-cream animate-pulse" />
     ),
   }
 );
@@ -54,56 +53,52 @@ export default function QuestPage() {
       {showIntro && (
         <div className="absolute inset-0 z-[1100] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" />
-          <div className="relative bg-white rounded-2xl mx-4 p-6 max-w-sm shadow-2xl animate-slide-up">
-            <div className="text-center space-y-2 mb-4">
-              <div className="text-4xl">&#11088;</div>
-              <h1 className="text-xl font-bold text-foreground">
+          <div className="relative bg-white rounded-lg mx-4 p-6 max-w-sm shadow-2xl animate-slide-up">
+            <div className="text-center mb-5">
+              <h1 className="text-2xl font-bold text-foreground tracking-tight">
                 STEAM Wheel Quest
               </h1>
-              <p className="text-sm text-muted">
-                A race-day scavenger hunt for a good cause!
+              <p className="text-sm text-muted mt-1">
+                A race-day scavenger hunt for a good cause
               </p>
             </div>
 
-            <div className="space-y-3 text-sm text-foreground mb-5">
-              <div className="flex gap-3">
-                <span className="text-teal font-bold text-lg">1</span>
+            <div className="space-y-4 text-sm text-foreground mb-6">
+              <div className="flex gap-3 items-start">
+                <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
                 <p>
-                  <strong>Scan checkpoints</strong> around the race course using
-                  QR codes
+                  <strong>Scan checkpoints</strong> around the race course using QR codes
                 </p>
               </div>
-              <div className="flex gap-3">
-                <span className="text-teal font-bold text-lg">2</span>
+              <div className="flex gap-3 items-start">
+                <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">2</span>
                 <p>
-                  <strong>Answer a quick STEAM question</strong> to earn raffle
-                  entries
+                  <strong>Answer a STEAM question</strong> to earn raffle entries
                 </p>
               </div>
-              <div className="flex gap-3">
-                <span className="text-teal font-bold text-lg">3</span>
+              <div className="flex gap-3 items-start">
+                <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">3</span>
                 <p>
                   <strong>Collect entries</strong> for a chance to win prizes
                 </p>
               </div>
-              <div className="flex gap-3">
-                <span className="text-coral font-bold text-lg">+</span>
+              <div className="flex gap-3 items-start">
+                <span className="w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0">+</span>
                 <p>
-                  <strong>Donate</strong> to unlock bonus entries and boost your
-                  rewards!
+                  <strong>Donate</strong> to unlock bonus entries and boost your rewards
                 </p>
               </div>
             </div>
 
-            <div className="bg-teal/5 rounded-lg p-3 mb-4">
-              <p className="text-xs text-foreground text-center">
+            <div className="bg-cream rounded-lg p-3 mb-5">
+              <p className="text-xs text-foreground text-center leading-relaxed">
                 All donations support the <strong>STEAM Wheel</strong> program
                 — hands-on STEAM learning for elementary students.
               </p>
             </div>
 
             <Button variant="primary" size="xl" fullWidth onClick={dismissIntro}>
-              Let&apos;s Go!
+              Let&apos;s Go
             </Button>
           </div>
         </div>
@@ -111,31 +106,31 @@ export default function QuestPage() {
 
       {/* Quest HUD overlay - top */}
       {!showIntro && !loading && (
-        <div className="absolute top-3 left-3 right-14 z-[1000]">
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg px-4 py-3 shadow-lg">
+        <div className="absolute top-4 left-4 right-16 z-[1000]">
+          <div className="bg-white/95 backdrop-blur-sm rounded-lg px-5 py-4 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs text-muted">Raffle Entries</div>
-                <div className="text-2xl font-bold text-teal">
+                <div className="text-xs font-bold text-muted uppercase tracking-wider">Entries</div>
+                <div className="text-3xl font-bold text-teal leading-none mt-1">
                   {user?.raffle_entries_total ?? 0}
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-xs text-muted">Checkpoints</div>
-                <div className="text-lg font-bold text-foreground">
-                  {completed}/{total}
+                <div className="text-xs font-bold text-muted uppercase tracking-wider">Checkpoints</div>
+                <div className="text-2xl font-bold text-foreground leading-none mt-1">
+                  {completed}<span className="text-muted font-normal">/{total}</span>
                 </div>
               </div>
             </div>
             {(user?.active_multiplier || user?.donor_badge) && (
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2 mt-3">
                 {user?.active_multiplier && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-coral/10 text-coral rounded-full text-xs font-semibold">
-                    2x Boost ({user.active_multiplier.remaining_uses} left)
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-teal/10 text-teal rounded text-xs font-bold uppercase tracking-wide">
+                    2x Boost — {user.active_multiplier.remaining_uses} left
                   </span>
                 )}
                 {user?.donor_badge && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-semibold">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/10 text-primary rounded text-xs font-bold uppercase tracking-wide">
                     Donor
                   </span>
                 )}
@@ -147,11 +142,11 @@ export default function QuestPage() {
 
       {/* Scan button - bottom center */}
       {!showIntro && !loading && (
-        <div className="absolute bottom-20 left-0 right-0 z-[1000] flex justify-center px-4">
-          <Link href="/quest/scan" className="w-full max-w-xs">
+        <div className="absolute bottom-18 left-4 right-4 z-[1000] flex justify-center">
+          <Link href="/quest/scan" className="w-full max-w-sm">
             <Button variant="primary" size="xl" fullWidth>
               <svg
-                className="w-6 h-6 mr-2"
+                className="w-5 h-5 mr-2"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -173,7 +168,7 @@ export default function QuestPage() {
       {!showIntro && (
         <button
           onClick={() => setDonateOpen(true)}
-          className="absolute bottom-32 right-3 z-[1000] bg-coral text-white px-4 py-2.5 rounded-full shadow-lg font-bold text-sm flex items-center gap-1.5"
+          className="absolute bottom-32 right-4 z-[1000] bg-primary text-white px-4 py-2.5 rounded-lg shadow-lg font-bold text-xs uppercase tracking-wide flex items-center gap-1.5"
         >
           <svg
             className="w-4 h-4"

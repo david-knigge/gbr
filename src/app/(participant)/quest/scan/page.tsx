@@ -56,17 +56,17 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-4 pt-6 space-y-4 pb-20">
+    <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-5 pt-8 space-y-5 pb-24">
       <div className="text-center">
-        <h1 className="text-xl font-bold text-foreground">Scan Checkpoint</h1>
-        <p className="text-sm text-muted mt-1">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Scan Checkpoint</h1>
+        <p className="text-sm text-muted mt-1 font-medium">
           Point your camera at a checkpoint QR code
         </p>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="animate-pulse text-muted text-lg">Processing scan...</div>
+          <div className="animate-pulse text-muted font-bold text-lg">Processing scan...</div>
         </div>
       ) : (
         <QRScanner
@@ -76,14 +76,14 @@ export default function ScanPage() {
       )}
 
       {error && (
-        <div className="bg-error/10 text-error rounded-xl p-4 text-center text-sm font-medium">
+        <div className="bg-error/10 text-error rounded-lg p-4 text-center text-sm font-bold">
           {error}
           <button
             onClick={() => {
               setError(null);
               setLoading(false);
             }}
-            className="block mx-auto mt-2 text-teal underline"
+            className="block mx-auto mt-2 text-teal font-bold text-sm uppercase tracking-wide"
           >
             Try again
           </button>

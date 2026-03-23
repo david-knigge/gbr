@@ -230,20 +230,20 @@ export function RaceMap({
 
       {/* Course hover tooltip */}
       {hoveredCourse && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[1100] bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg text-sm pointer-events-none">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[1100] bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2.5 shadow-lg text-sm pointer-events-none">
           <span className="font-bold" style={{ color: hoveredCourse.color }}>
             {hoveredCourse.name}
           </span>
-          <span className="text-muted ml-2">Start: {hoveredCourse.startTime}</span>
+          <span className="text-muted ml-3 font-medium">{hoveredCourse.startTime}</span>
         </div>
       )}
 
       {/* Legend toggle */}
       {showCourses && (
-        <div className="absolute top-3 right-3 z-[1000]">
+        <div className="absolute top-4 right-4 z-[1000]">
           <button
             onClick={() => setLegendOpen(!legendOpen)}
-            className="bg-cream/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg text-xs font-semibold text-foreground flex items-center gap-1.5 border border-card-border"
+            className="bg-white/95 backdrop-blur-sm rounded-lg px-3.5 py-2.5 shadow-lg text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -251,10 +251,10 @@ export function RaceMap({
             Legend
           </button>
           {legendOpen && (
-            <div className="mt-1 bg-cream/95 backdrop-blur-sm rounded-lg shadow-lg p-3 space-y-2 min-w-[180px] border border-card-border">
-              <div className="text-[10px] font-bold text-muted uppercase tracking-wider">Courses</div>
+            <div className="mt-1.5 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4 space-y-2.5 min-w-[200px]">
+              <div className="text-[10px] font-bold text-muted uppercase tracking-widest">Courses</div>
               {COURSES.map((course) => (
-                <label key={course.name} className="flex items-center gap-2 cursor-pointer">
+                <label key={course.name} className="flex items-center gap-2.5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={visibleCourses.has(course.name)}
@@ -262,44 +262,44 @@ export function RaceMap({
                     className="rounded accent-teal"
                   />
                   <span
-                    className="w-3 h-3 rounded-full"
+                    className="w-3 h-3 rounded-sm"
                     style={{ background: course.color }}
                   />
-                  <span className="text-xs font-medium text-foreground">{course.name}</span>
-                  <span className="text-[10px] text-muted ml-auto">{course.startTime}</span>
+                  <span className="text-xs font-semibold text-foreground">{course.name}</span>
+                  <span className="text-[10px] text-muted ml-auto font-medium">{course.startTime}</span>
                 </label>
               ))}
               <hr className="border-card-border" />
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={poisVisible}
                   onChange={() => setPoisVisible(!poisVisible)}
                   className="rounded accent-teal"
                 />
-                <span className="text-xs font-medium text-foreground">Info Points</span>
+                <span className="text-xs font-semibold text-foreground">Info Points</span>
               </label>
               {poisVisible && (
-                <div className="text-[10px] text-muted space-y-1 pl-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#3b82f6" }}>P</span>
-                    Parking
+                <div className="text-[11px] text-muted space-y-1.5 pl-1">
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-sm text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#3b82f6" }}>P</span>
+                    <span className="font-medium">Parking</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#7B5EA7" }}>R</span>
-                    Registration
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-sm text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#7B5EA7" }}>R</span>
+                    <span className="font-medium">Registration</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#22c55e" }}>S</span>
-                    Start / Finish
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-sm text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#22c55e" }}>S</span>
+                    <span className="font-medium">Start / Finish</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#f59e0b" }}>+</span>
-                    Aid Station
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-sm text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#f59e0b" }}>+</span>
+                    <span className="font-medium">Aid Station</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#64748b" }}>W</span>
-                    Restrooms
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-sm text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#64748b" }}>W</span>
+                    <span className="font-medium">Restrooms</span>
                   </div>
                 </div>
               )}
