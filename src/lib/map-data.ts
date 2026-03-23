@@ -1,11 +1,12 @@
 // Points of interest around the race
 export interface MapPOI {
   name: string;
-  type: "parking" | "registration" | "start" | "finish" | "aid" | "restroom";
+  type: string;
   position: [number, number];
   description: string;
 }
 
+// Hardcoded fallback — the app will try to load from Supabase first
 export const POIS: MapPOI[] = [
   {
     name: "Registration & Packet Pickup",
@@ -52,4 +53,7 @@ export const POI_ICONS: Record<string, { emoji: string; color: string }> = {
   finish: { emoji: "F", color: "#ef4444" },
   aid: { emoji: "+", color: "#f59e0b" },
   restroom: { emoji: "W", color: "#64748b" },
+  stand: { emoji: "&#9733;", color: "#E8643B" },
+  info: { emoji: "i", color: "#4DBFB3" },
+  other: { emoji: "?", color: "#999" },
 };

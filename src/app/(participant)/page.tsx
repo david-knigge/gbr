@@ -10,7 +10,7 @@ const RaceMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-full bg-teal/10 animate-pulse" />
+      <div className="w-full h-full bg-cream animate-pulse" />
     ),
   }
 );
@@ -26,26 +26,29 @@ export default function RaceInfoPage() {
       </div>
 
       {/* Event header overlay */}
-      <div className="absolute top-3 left-3 z-[1000] bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg flex items-center gap-2.5">
+      <div className="absolute top-3 left-3 z-[1000] bg-cream/95 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg flex items-center gap-2.5 border border-coral/30">
         <Image
           src="/logo-square.png"
           alt="Great Benicia Run"
-          width={36}
-          height={36}
+          width={40}
+          height={40}
           className="rounded-full"
         />
         <div>
-          <h1 className="text-sm font-bold text-foreground leading-tight">
+          <h1 className="text-sm text-primary leading-tight">
             The Great Benicia Run
           </h1>
-          <p className="text-[10px] text-muted">Strait to the Finish</p>
+          <p className="text-[10px] text-coral font-medium tracking-wide uppercase">
+            Strait to the Finish
+          </p>
         </div>
       </div>
 
       {/* Donate FAB */}
       <button
         onClick={() => setDonateOpen(true)}
-        className="absolute bottom-16 right-3 z-[1000] bg-coral text-white px-5 py-3 rounded-full shadow-lg hover:bg-coral-light active:bg-coral transition-colors font-bold text-sm flex items-center gap-2"
+        className="absolute bottom-16 right-3 z-[1000] bg-coral text-cream px-5 py-3 rounded-full shadow-lg hover:bg-coral-light active:bg-coral transition-colors font-bold text-sm flex items-center gap-2 border-2 border-cream/30"
+        style={{ fontFamily: "var(--font-display)" }}
       >
         <svg
           className="w-5 h-5"

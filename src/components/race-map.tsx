@@ -1,11 +1,13 @@
 "use client";
 
+import "leaflet/dist/leaflet.css";
 import { useEffect, useState, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { CheckpointProgress } from "@/lib/types";
 import { COURSES, type Course } from "@/lib/course-data";
-import { POIS, POI_ICONS } from "@/lib/map-data";
+import type { MapPOI } from "@/lib/map-data";
+import { POI_ICONS } from "@/lib/map-data";
 
 // Benicia First Street Green area
 const RACE_CENTER: [number, number] = [38.0494, -122.1586];
@@ -89,6 +91,7 @@ function LocationTracker({ onLocationFound }: { onLocationFound: (pos: [number, 
 
 interface RaceMapProps {
   checkpoints?: CheckpointProgress[];
+  pois?: MapPOI[];
   showCourses?: boolean;
   showPOIs?: boolean;
   showCheckpoints?: boolean;
@@ -96,6 +99,7 @@ interface RaceMapProps {
 
 export function RaceMap({
   checkpoints = [],
+  pois,
   showCourses = true,
   showPOIs = true,
   showCheckpoints = false,
@@ -105,9 +109,23 @@ export function RaceMap({
     new Set(COURSES.map((c) => c.name))
   );
   const [legendOpen, setLegendOpen] = useState(false);
+  const [poisVisible, setPoisVisible] = useState(true);
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
+  const [loadedPois, setLoadedPois] = useState<MapPOI[]>([]);
 
   const positions = getCheckpointPositions(checkpoints.length);
+
+  // Load POIs from API if not provided as prop
+  useEffect(() => {
+    if (pois) {
+      setLoadedPois(pois);
+      return;
+    }
+    fetch("/api/pois")
+      .then((r) => (r.ok ? r.json() : []))
+      .then(setLoadedPois)
+      .catch(() => {});
+  }, [pois]);
 
   const handleLocationFound = useCallback((pos: [number, number]) => {
     setUserPosition(pos);
@@ -148,7 +166,7 @@ export function RaceMap({
           </>
         )}
 
-        {/* Course polylines */}
+        {/* Course polylines — thicker with outline for visibility */}
         {showCourses &&
           COURSES.filter((c) => visibleCourses.has(c.name)).map((course) => (
             <Polyline
@@ -156,8 +174,10 @@ export function RaceMap({
               positions={course.points}
               pathOptions={{
                 color: course.color,
-                weight: 4,
-                opacity: 0.85,
+                weight: 6,
+                opacity: 0.9,
+                lineCap: "round",
+                lineJoin: "round",
               }}
               eventHandlers={{
                 mouseover: () => setHoveredCourse(course),
@@ -174,8 +194,9 @@ export function RaceMap({
 
         {/* POI markers */}
         {showPOIs &&
-          POIS.map((poi) => (
-            <Marker key={poi.name} position={poi.position} icon={poiIcon(poi.type)}>
+          poisVisible &&
+          loadedPois.map((poi) => (
+            <Marker key={`${poi.name}-${poi.position[0]}`} position={poi.position} icon={poiIcon(poi.type)}>
               <Popup>
                 <strong>{poi.name}</strong>
                 <br />
@@ -222,22 +243,23 @@ export function RaceMap({
         <div className="absolute top-3 right-3 z-[1000]">
           <button
             onClick={() => setLegendOpen(!legendOpen)}
-            className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg text-xs font-semibold text-foreground flex items-center gap-1"
+            className="bg-cream/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg text-xs font-semibold text-foreground flex items-center gap-1.5 border border-card-border"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
             </svg>
-            Courses
+            Legend
           </button>
           {legendOpen && (
-            <div className="mt-1 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 space-y-2 min-w-[160px]">
+            <div className="mt-1 bg-cream/95 backdrop-blur-sm rounded-lg shadow-lg p-3 space-y-2 min-w-[180px] border border-card-border">
+              <div className="text-[10px] font-bold text-muted uppercase tracking-wider">Courses</div>
               {COURSES.map((course) => (
                 <label key={course.name} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={visibleCourses.has(course.name)}
                     onChange={() => toggleCourse(course.name)}
-                    className="rounded"
+                    className="rounded accent-teal"
                   />
                   <span
                     className="w-3 h-3 rounded-full"
@@ -248,24 +270,39 @@ export function RaceMap({
                 </label>
               ))}
               <hr className="border-card-border" />
-              <div className="text-[10px] text-muted space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#3b82f6" }}>P</span>
-                  Parking
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={poisVisible}
+                  onChange={() => setPoisVisible(!poisVisible)}
+                  className="rounded accent-teal"
+                />
+                <span className="text-xs font-medium text-foreground">Info Points</span>
+              </label>
+              {poisVisible && (
+                <div className="text-[10px] text-muted space-y-1 pl-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#3b82f6" }}>P</span>
+                    Parking
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#7B5EA7" }}>R</span>
+                    Registration
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#22c55e" }}>S</span>
+                    Start / Finish
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#f59e0b" }}>+</span>
+                    Aid Station
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#64748b" }}>W</span>
+                    Restrooms
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#7B5EA7" }}>R</span>
-                  Registration
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#22c55e" }}>S</span>
-                  Start/Finish
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded text-[10px] font-bold text-white flex items-center justify-center" style={{ background: "#f59e0b" }}>+</span>
-                  Aid Station
-                </div>
-              </div>
+              )}
             </div>
           )}
         </div>

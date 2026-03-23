@@ -1,0 +1,35 @@
+import { NextResponse } from "next/server";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
+
+export async function GET() {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("pois")
+    .select("id, name, type, position_lat, position_lng, description")
+    .eq("is_active", true)
+    .order("sort_order");
+
+  if (error) {
+    // Fallback to hardcoded data if table doesn't exist yet
+    const { POIS } = await import("@/lib/map-data");
+    return NextResponse.json(
+      POIS.map((p) => ({
+        id: p.name,
+        name: p.name,
+        type: p.type,
+        position: p.position,
+        description: p.description,
+      }))
+    );
+  }
+
+  return NextResponse.json(
+    (data || []).map((p) => ({
+      id: p.id,
+      name: p.name,
+      type: p.type,
+      position: [p.position_lat, p.position_lng] as [number, number],
+      description: p.description,
+    }))
+  );
+}

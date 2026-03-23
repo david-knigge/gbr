@@ -58,10 +58,10 @@ export function DonateOverlay({ open, onClose }: DonateOverlayProps) {
       />
 
       {/* Panel */}
-      <div className="relative bg-white rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto animate-slide-up">
+      <div className="relative bg-cream rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto animate-slide-up border-t-4 border-coral">
         {/* Handle */}
-        <div className="sticky top-0 bg-white rounded-t-2xl pt-3 pb-2 flex justify-center">
-          <div className="w-10 h-1 rounded-full bg-gray-300" />
+        <div className="sticky top-0 bg-cream rounded-t-2xl pt-3 pb-2 flex justify-center">
+          <div className="w-10 h-1 rounded-full bg-coral/30" />
         </div>
 
         <div className="px-5 pb-8 space-y-4">

@@ -28,7 +28,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-card-border safe-area-pb z-50">
+    <nav className="bg-cream border-t-2 border-coral/20 safe-area-pb z-50">
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href || (tab.href === "/quest" && pathname.startsWith("/quest"));
@@ -36,9 +36,10 @@ export function BottomNav() {
             <Link
               key={tab.href}
               href={tab.href}
-              className={`flex flex-col items-center gap-0.5 py-2 px-4 text-xs font-medium transition-colors ${
-                isActive ? "text-teal" : "text-muted hover:text-foreground"
+              className={`flex flex-col items-center gap-0.5 py-2 px-4 text-xs transition-colors ${
+                isActive ? "text-coral font-bold" : "text-muted hover:text-foreground font-medium"
               }`}
+              style={{ fontFamily: "var(--font-display)" }}
             >
               {tab.icon}
               {tab.label}

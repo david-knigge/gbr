@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Stonin";
+  src: url("/fonts/stonin.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
   --color-primary: #7B5EA7;
   --color-primary-light: #9474BF;
@@ -14,11 +22,12 @@
   --color-accent-light: #F0845F;
   --color-success: #22c55e;
   --color-error: #ef4444;
-  --color-background: #F7F5F0;
+  --color-background: #F2EDE0;
   --color-foreground: #2D2A3E;
   --color-muted: #7A778A;
   --color-card: #ffffff;
   --color-card-border: #E5E0D5;
+  --font-display: "Stonin", system-ui, sans-serif;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -27,6 +36,11 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
 }
 
 .leaflet-container {
