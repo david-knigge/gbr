@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="StravaGPX" version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+ <metadata>
+  <name>The Great Benicia Run Kids Mini Run</name>
+  <author>
+   <name>Sam Schmidt</name>
+   <link href="https://www.strava.com/athletes/194539245"/>
+  </author>
+  <copyright author="OpenStreetMap contributors">
+   <year>2020</year>
+   <license>https://www.openstreetmap.org/copyright</license>
+  </copyright>
+  <link href="https://www.strava.com/routes/3427388434591112778"/>
+ </metadata>
+ <trk>
+  <name>The Great Benicia Run Kids Mini Run</name>
+  <link href="https://www.strava.com/routes/3427388434591112778"/>
+  <type>running</type>
+  <trkseg>
+   <trkpt lat="38.04422" lon="-122.16248000000002">
+    <ele>2.6300000000000003</ele>
+   </trkpt>
+   <trkpt lat="38.044290000000004" lon="-122.1624">
+    <ele>2.6400000000000006</ele>
+   </trkpt>
+   <trkpt lat="38.04437" lon="-122.16236">
+    <ele>2.6400000000000006</ele>
+   </trkpt>
+   <trkpt lat="38.04444" lon="-122.1624">
+    <ele>2.82</ele>
+   </trkpt>
+   <trkpt lat="38.04501500092609" lon="-122.16197500321866">
+    <ele>3.18</ele>
+   </trkpt>
+   <trkpt lat="38.045590000000004" lon="-122.16155">
+    <ele>3.69</ele>
+   </trkpt>
+   <trkpt lat="38.04563" lon="-122.16147000000001">
+    <ele>3.69</ele>
+   </trkpt>
+   <trkpt lat="38.04569" lon="-122.16142">
+    <ele>3.69</ele>
+   </trkpt>
+   <trkpt lat="38.04563" lon="-122.16129000000001">
+    <ele>3.54</ele>
+   </trkpt>
+  </trkseg>
+ </trk>
+</gpx>

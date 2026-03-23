@@ -1,26 +1,49 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-primary: #7B5EA7;
+  --color-primary-light: #9474BF;
+  --color-primary-dark: #634A8A;
+  --color-teal: #4DBFB3;
+  --color-teal-light: #6DD4C9;
+  --color-teal-dark: #3AA99D;
+  --color-coral: #E8643B;
+  --color-coral-light: #F0845F;
+  --color-cream: #F2EDE0;
+  --color-accent: #E8643B;
+  --color-accent-light: #F0845F;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-background: #F7F5F0;
+  --color-foreground: #2D2A3E;
+  --color-muted: #7A778A;
+  --color-card: #ffffff;
+  --color-card-border: #E5E0D5;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
 }

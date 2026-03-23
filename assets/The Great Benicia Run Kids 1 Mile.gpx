@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="StravaGPX" version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+ <metadata>
+  <name>The Great Benicia Run Kids 1 Mile</name>
+  <author>
+   <name>Sam Schmidt</name>
+   <link href="https://www.strava.com/athletes/194539245"/>
+  </author>
+  <copyright author="OpenStreetMap contributors">
+   <year>2020</year>
+   <license>https://www.openstreetmap.org/copyright</license>
+  </copyright>
+  <link href="https://www.strava.com/routes/3427387814461014902"/>
+ </metadata>
+ <trk>
+  <name>The Great Benicia Run Kids 1 Mile</name>
+  <link href="https://www.strava.com/routes/3427387814461014902"/>
+  <type>running</type>
+  <trkseg>
+   <trkpt lat="38.04569" lon="-122.16142">
+    <ele>3.69</ele>
+   </trkpt>
+   <trkpt lat="38.045750000000005" lon="-122.16137">
+    <ele>3.7600000000000002</ele>
+   </trkpt>
+   <trkpt lat="38.0458" lon="-122.16138000000001">
+    <ele>3.93</ele>
+   </trkpt>
+   <trkpt lat="38.04587" lon="-122.16155">
+    <ele>3.87</ele>
+   </trkpt>
+   <trkpt lat="38.04648" lon="-122.16113000000001">
+    <ele>4.94</ele>
+   </trkpt>
+   <trkpt lat="38.04689000046576" lon="-122.16083000161817">
+    <ele>5.450000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.0473" lon="-122.16053000000001">
+    <ele>6.140000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.0473" lon="-122.16051000000002">
+    <ele>6.180000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.04746" lon="-122.16042000000002">
+    <ele>6.16</ele>
+   </trkpt>
+   <trkpt lat="38.048230004022166" lon="-122.15985751774798">
+    <ele>5.960000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.049000005364185" lon="-122.15929502366343">
+    <ele>5.750000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.049770004025916" lon="-122.15873251774586">
+    <ele>8.58</ele>
+   </trkpt>
+   <trkpt lat="38.050540000000005" lon="-122.15817000000001">
+    <ele>10.92</ele>
+   </trkpt>
+   <trkpt lat="38.05062" lon="-122.15811000000001">
+    <ele>11.0</ele>
+   </trkpt>
+   <trkpt lat="38.050580000000004" lon="-122.15802000000001">
+    <ele>10.900000000000002</ele>
+   </trkpt>
+   <trkpt lat="38.05098500060473" lon="-122.15772000149424">
+    <ele>11.48</ele>
+   </trkpt>
+   <trkpt lat="38.051390000000005" lon="-122.15742000000002">
+    <ele>11.930000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.051700003955894" lon="-122.15810666076554">
+    <ele>13.13</ele>
+   </trkpt>
+   <trkpt lat="38.05201000391753" lon="-122.15879332734713">
+    <ele>12.450000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.05232" lon="-122.15948000000002">
+    <ele>10.13</ele>
+   </trkpt>
+   <trkpt lat="38.05191000031251" lon="-122.15976500161828">
+    <ele>9.500000000000002</ele>
+   </trkpt>
+   <trkpt lat="38.051500000000004" lon="-122.16005000000001">
+    <ele>8.96</ele>
+   </trkpt>
+   <trkpt lat="38.051090003502786" lon="-122.1591399948926">
+    <ele>11.930000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.05068" lon="-122.15823">
+    <ele>11.160000000000002</ele>
+   </trkpt>
+   <trkpt lat="38.05062" lon="-122.15811000000001">
+    <ele>11.0</ele>
+   </trkpt>
+   <trkpt lat="38.04998800361531" lon="-122.1585720159551">
+    <ele>9.48</ele>
+   </trkpt>
+   <trkpt lat="38.04935600542241" lon="-122.1590340239327">
+    <ele>6.790000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.04872400542139" lon="-122.15949602393312">
+    <ele>5.83</ele>
+   </trkpt>
+   <trkpt lat="38.048092003612325" lon="-122.15995801595662">
+    <ele>5.99</ele>
+   </trkpt>
+   <trkpt lat="38.04746" lon="-122.16042000000002">
+    <ele>6.16</ele>
+   </trkpt>
+   <trkpt lat="38.0473" lon="-122.16051000000002">
+    <ele>6.180000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.04721" lon="-122.16033000000002">
+    <ele>6.090000000000001</ele>
+   </trkpt>
+   <trkpt lat="38.04657500091698" lon="-122.16080500414877">
+    <ele>5.16</ele>
+   </trkpt>
+   <trkpt lat="38.04594" lon="-122.16128">
+    <ele>4.16</ele>
+   </trkpt>
+   <trkpt lat="38.045930000000006" lon="-122.16128">
+    <ele>4.15</ele>
+   </trkpt>
+   <trkpt lat="38.0458" lon="-122.16138000000001">
+    <ele>3.8400000000000003</ele>
+   </trkpt>
+   <trkpt lat="38.045750000000005" lon="-122.16137">
+    <ele>3.7600000000000002</ele>
+   </trkpt>
+   <trkpt lat="38.04569" lon="-122.16142">
+    <ele>3.69</ele>
+   </trkpt>
+  </trkseg>
+ </trk>
+</gpx>
