@@ -51,40 +51,34 @@ export function DonateOverlay({ open, onClose }: DonateOverlayProps) {
 
   return (
     <div className="absolute inset-0 z-[1100] flex flex-col justify-end">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-      {/* Panel */}
       <div className="relative bg-white rounded-t-xl shadow-2xl max-h-[85vh] overflow-y-auto animate-slide-up">
-        {/* Handle + close */}
         <div className="sticky top-0 bg-white rounded-t-xl pt-3 pb-2 flex justify-center">
           <div className="w-10 h-1 rounded-full bg-card-border" />
         </div>
 
         <div className="px-5 pb-8 space-y-5">
-          {/* Header */}
           <div className="text-center">
             <h2 className="text-2xl font-bold text-foreground tracking-tight">
-              Support STEAM Wheel
+              support STEAM wheel
             </h2>
             <p className="text-sm text-muted mt-1">
-              Help us keep the wheel turning
+              help us keep the wheel turning
             </p>
           </div>
 
-          {/* Campaign Info */}
           <div className="bg-cream rounded-lg p-4">
             <p className="text-sm text-foreground leading-relaxed">
               STEAM Wheel is a hands-on, 15-week educational program for
-              3rd–5th graders. Students rotate through robotics, programming,
+              3rd–5th graders. students rotate through robotics, programming,
               dance, arts, chess and more.
             </p>
           </div>
 
-          {/* Donor Perks */}
           <div>
-            <h3 className="text-xs font-bold text-muted tracking-wide mb-3">
-              Donor Rewards
+            <h3 className="text-xs font-medium text-muted mb-3">
+              donor rewards
             </h3>
             <div className="space-y-3">
               <div className="flex items-start gap-4">
@@ -105,30 +99,28 @@ export function DonateOverlay({ open, onClose }: DonateOverlayProps) {
                 <div className="text-sm text-foreground">
                   +50 entries
                   <span className="block text-xs text-teal font-semibold mt-0.5">
-                    + Donor badge
+                    + donor badge
                   </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* App Code */}
           {user && (
             <div className="bg-cream border border-card-border rounded-lg p-4 text-center">
-              <p className="text-xs font-bold text-muted tracking-wide mb-2">
-                Your Donation Code
+              <p className="text-xs font-medium text-muted mb-2">
+                your donation code
               </p>
               <div className="text-2xl font-mono font-bold text-foreground tracking-widest">
                 {user.app_code}
               </div>
               <CopyButton text={user.app_code} className="mt-2" />
               <p className="text-xs text-muted mt-3 leading-relaxed">
-                Enter this code at checkout to link your donation.
+                enter this code at checkout to link your donation.
               </p>
             </div>
           )}
 
-          {/* Donate CTA */}
           <Button
             variant="accent"
             size="xl"
@@ -137,18 +129,17 @@ export function DonateOverlay({ open, onClose }: DonateOverlayProps) {
               window.open("https://givebutter.com", "_blank");
             }}
           >
-            Donate Now
+            donate now
           </Button>
 
-          {/* Raffle section - collapsible */}
           <button
             onClick={() => setShowRaffle(!showRaffle)}
-            className="w-full flex items-center justify-between text-sm font-semibold text-muted py-2"
+            className="w-full flex items-center justify-between text-sm font-medium text-muted py-2"
           >
             <span>
               {user?.email
-                ? "Raffle info (eligible)"
-                : "Enter raffle (add your email)"}
+                ? "raffle info (eligible)"
+                : "enter raffle (add your email)"}
             </span>
             <svg
               className={`w-4 h-4 transition-transform ${showRaffle ? "rotate-180" : ""}`}
@@ -166,7 +157,7 @@ export function DonateOverlay({ open, onClose }: DonateOverlayProps) {
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                placeholder="Display name"
+                placeholder="display name"
                 className="w-full px-4 py-3 border border-card-border rounded-lg text-sm bg-white focus:outline-none focus:border-teal"
               />
               <input
@@ -183,13 +174,13 @@ export function DonateOverlay({ open, onClose }: DonateOverlayProps) {
                 onClick={handleSaveProfile}
                 disabled={saving}
               >
-                {saving ? "Saving..." : saved ? "Saved!" : "Save"}
+                {saving ? "saving..." : saved ? "saved!" : "save"}
               </Button>
             </div>
           )}
 
           <p className="text-center text-xs text-muted font-medium">
-            Play for free. Donate to boost your impact.
+            play for free. donate to boost your impact.
           </p>
         </div>
       </div>

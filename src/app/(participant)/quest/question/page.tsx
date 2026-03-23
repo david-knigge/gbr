@@ -14,7 +14,7 @@ function QuestionContent() {
   const { refreshUser } = useUser();
 
   const checkpointId = params.get("checkpoint_id") || "";
-  const checkpointName = params.get("checkpoint_name") || "Checkpoint";
+  const checkpointName = params.get("checkpoint_name") || "checkpoint";
   const questionId = params.get("question_id") || "";
   const prompt = params.get("prompt") || "";
   const entriesFromScan = parseInt(params.get("entries_awarded") || "0");
@@ -53,7 +53,6 @@ function QuestionContent() {
     }
   }
 
-  // Show result screen
   if (result) {
     const totalEarned = entriesFromScan + result.entries_awarded;
     return (
@@ -66,7 +65,7 @@ function QuestionContent() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold text-success">Correct!</h1>
+              <h1 className="text-2xl font-bold text-success">correct!</h1>
             </>
           ) : (
             <>
@@ -75,7 +74,7 @@ function QuestionContent() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold text-foreground">Nice try!</h1>
+              <h1 className="text-2xl font-bold text-foreground">nice try!</h1>
             </>
           )}
         </div>
@@ -88,8 +87,8 @@ function QuestionContent() {
 
         <Card className="text-center">
           <div className="text-4xl font-bold text-teal">+{totalEarned}</div>
-          <div className="text-xs font-bold text-muted tracking-wide mt-1">
-            Raffle Entries Earned
+          <div className="text-xs font-medium text-muted mt-1">
+            raffle entries earned
           </div>
           {entriesFromScan > 0 && (
             <p className="text-sm text-muted mt-3">
@@ -102,7 +101,7 @@ function QuestionContent() {
             </p>
           )}
           <div className="mt-4 pt-3 border-t border-card-border text-sm text-muted">
-            Total: <span className="font-bold text-foreground text-lg">{result.new_total}</span> entries
+            total: <span className="font-bold text-foreground text-lg">{result.new_total}</span> entries
           </div>
         </Card>
 
@@ -111,9 +110,9 @@ function QuestionContent() {
             variant="primary"
             size="lg"
             fullWidth
-            onClick={() => router.push("/quest")}
+            onClick={() => router.push("/")}
           >
-            Continue
+            continue
           </Button>
 
           <Button
@@ -122,19 +121,18 @@ function QuestionContent() {
             fullWidth
             onClick={() => router.push("/quest/scan")}
           >
-            Scan Next Checkpoint
+            scan next checkpoint
           </Button>
         </div>
       </div>
     );
   }
 
-  // Show question
   return (
     <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-5 pt-8 space-y-5 pb-24">
       <div className="text-center">
-        <p className="text-xs font-bold text-teal tracking-wide">
-          {checkpointName}
+        <p className="text-xs font-bold text-teal">
+          {checkpointName.toLowerCase()}
         </p>
         {entriesFromScan > 0 && (
           <p className="text-sm text-success font-bold mt-2">
@@ -179,7 +177,7 @@ function QuestionContent() {
         onClick={handleSubmit}
         disabled={!selectedAnswer || submitting}
       >
-        {submitting ? "Submitting..." : "Submit Answer"}
+        {submitting ? "submitting..." : "submit answer"}
       </Button>
     </div>
   );
@@ -187,7 +185,7 @@ function QuestionContent() {
 
 export default function QuestionPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-pulse text-muted font-medium">Loading...</div></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-pulse text-muted font-medium">loading...</div></div>}>
       <QuestionContent />
     </Suspense>
   );

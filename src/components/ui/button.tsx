@@ -34,7 +34,7 @@ export function Button({
   return (
     <button
       className={`
-        inline-flex items-center justify-center font-bold tracking-wide transition-all
+        inline-flex items-center justify-center font-semibold transition-all
         disabled:opacity-40 disabled:pointer-events-none
         ${variantClasses[variant]}
         ${sizeClasses[size]}

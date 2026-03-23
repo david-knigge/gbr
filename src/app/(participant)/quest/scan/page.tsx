@@ -22,12 +22,11 @@ export default function ScanPage() {
       });
 
       if (result.already_scanned && !result.question) {
-        setError("You've already completed this checkpoint!");
+        setError("you've already completed this checkpoint!");
         setLoading(false);
         return;
       }
 
-      // Navigate to question screen with scan data
       const params = new URLSearchParams({
         checkpoint_id: result.checkpoint.id,
         checkpoint_name: result.checkpoint.name,
@@ -50,7 +49,7 @@ export default function ScanPage() {
 
       router.push(`/quest/question?${params.toString()}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Scan failed");
+      setError(e instanceof Error ? e.message : "scan failed");
       setLoading(false);
     }
   }
@@ -58,15 +57,15 @@ export default function ScanPage() {
   return (
     <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-5 pt-8 space-y-5 pb-24">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Scan Checkpoint</h1>
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">scan checkpoint</h1>
         <p className="text-sm text-muted mt-1 font-medium">
-          Point your camera at a checkpoint QR code
+          point your camera at a checkpoint QR code
         </p>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="animate-pulse text-muted font-bold text-lg">Processing scan...</div>
+          <div className="animate-pulse text-muted font-bold text-lg">processing scan...</div>
         </div>
       ) : (
         <QRScanner
@@ -83,9 +82,9 @@ export default function ScanPage() {
               setError(null);
               setLoading(false);
             }}
-            className="block mx-auto mt-2 text-teal font-bold text-sm tracking-wide"
+            className="block mx-auto mt-2 text-teal font-bold text-sm"
           >
-            Try again
+            try again
           </button>
         </div>
       )}

@@ -30,7 +30,7 @@ export function clearUser(): void {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-// Cache the init promise so concurrent calls don't create multiple users
+// Persistent promise cache — never cleared so concurrent/re-mount calls reuse the same result
 let initPromise: Promise<StoredUser> | null = null;
 
 export async function initUser(): Promise<StoredUser> {
@@ -38,27 +38,29 @@ export async function initUser(): Promise<StoredUser> {
   const existing = getStoredUser();
   if (existing) return existing;
 
-  // Deduplicate concurrent init calls
+  // Deduplicate concurrent init calls — promise is never cleared
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
-    try {
-      const res = await fetch("/api/guest/init", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
+    // Double-check localStorage in case another call stored it while we were queued
+    const check = getStoredUser();
+    if (check) return check;
 
-      if (!res.ok) {
-        throw new Error("Failed to initialize user");
-      }
+    const res = await fetch("/api/guest/init", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
 
-      const data: GuestInitResponse = await res.json();
-      storeUser(data.user_id, data.app_code);
-      return { userId: data.user_id, appCode: data.app_code };
-    } finally {
+    if (!res.ok) {
+      // Reset so a future call can retry
       initPromise = null;
+      throw new Error("Failed to initialize user");
     }
+
+    const data: GuestInitResponse = await res.json();
+    storeUser(data.user_id, data.app_code);
+    return { userId: data.user_id, appCode: data.app_code };
   })();
 
   return initPromise;
