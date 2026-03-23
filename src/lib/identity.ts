@@ -30,18 +30,27 @@ export function clearUser(): void {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-// Persistent promise cache — never cleared so concurrent/re-mount calls reuse the same result
-let initPromise: Promise<StoredUser> | null = null;
+// Store promise on window to survive HMR module reloads in dev
+function getInitPromise(): Promise<StoredUser> | null {
+  if (typeof window === "undefined") return null;
+  return (window as unknown as Record<string, unknown>).__race_init_promise as Promise<StoredUser> | null ?? null;
+}
+
+function setInitPromise(p: Promise<StoredUser> | null) {
+  if (typeof window === "undefined") return;
+  (window as unknown as Record<string, unknown>).__race_init_promise = p;
+}
 
 export async function initUser(): Promise<StoredUser> {
   // If already stored, return immediately — no API call
   const existing = getStoredUser();
   if (existing) return existing;
 
-  // Deduplicate concurrent init calls — promise is never cleared
-  if (initPromise) return initPromise;
+  // Deduplicate concurrent init calls — stored on window to survive HMR
+  const pending = getInitPromise();
+  if (pending) return pending;
 
-  initPromise = (async () => {
+  const promise = (async () => {
     // Double-check localStorage in case another call stored it while we were queued
     const check = getStoredUser();
     if (check) return check;
@@ -53,8 +62,7 @@ export async function initUser(): Promise<StoredUser> {
     });
 
     if (!res.ok) {
-      // Reset so a future call can retry
-      initPromise = null;
+      setInitPromise(null);
       throw new Error("Failed to initialize user");
     }
 
@@ -63,5 +71,6 @@ export async function initUser(): Promise<StoredUser> {
     return { userId: data.user_id, appCode: data.app_code };
   })();
 
-  return initPromise;
+  setInitPromise(promise);
+  return promise;
 }

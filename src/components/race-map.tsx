@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { CheckpointProgress } from "@/lib/types";
-import { COURSES, type Course } from "@/lib/course-data";
+import { COURSES } from "@/lib/course-data";
 import type { MapPOI } from "@/lib/map-data";
 import { POI_ICONS } from "@/lib/map-data";
 
@@ -71,25 +71,29 @@ function getCheckpointPositions(checkpoints: CheckpointProgress[]): [number, num
   });
 }
 
-function LocationTracker({ onLocationFound }: { onLocationFound: (pos: [number, number]) => void }) {
+function LocationTracker({ onLocationFound, onDenied }: { onLocationFound: (pos: [number, number]) => void; onDenied: () => void }) {
   const map = useMap();
 
   useEffect(() => {
     if (!navigator.geolocation) return;
 
+    const handleError = (err: GeolocationPositionError) => {
+      if (err.code === err.PERMISSION_DENIED) onDenied();
+    };
+
     const watchId = navigator.geolocation.watchPosition(
       (pos) => onLocationFound([pos.coords.latitude, pos.coords.longitude]),
-      () => {},
+      handleError,
       { enableHighAccuracy: true, maximumAge: 5000 }
     );
 
     navigator.geolocation.getCurrentPosition(
       (pos) => map.setView([pos.coords.latitude, pos.coords.longitude], DEFAULT_ZOOM),
-      () => {}
+      handleError
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [map, onLocationFound]);
+  }, [map, onLocationFound, onDenied]);
 
   return null;
 }
@@ -98,6 +102,7 @@ interface RaceMapProps {
   checkpoints?: CheckpointProgress[];
   pois?: MapPOI[];
   showCourses?: boolean;
+  ghostCourses?: boolean;
   showPOIs?: boolean;
   showCheckpoints?: boolean;
 }
@@ -106,6 +111,7 @@ export function RaceMap({
   checkpoints = [],
   pois,
   showCourses = true,
+  ghostCourses = false,
   showPOIs = true,
   showCheckpoints = false,
 }: RaceMapProps) {
@@ -115,8 +121,8 @@ export function RaceMap({
   );
   const [legendOpen, setLegendOpen] = useState(false);
   const [poisVisible, setPoisVisible] = useState(true);
-  const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
   const [loadedPois, setLoadedPois] = useState<MapPOI[]>([]);
+  const [locationDenied, setLocationDenied] = useState(false);
 
   const positions = getCheckpointPositions(checkpoints);
 
@@ -154,7 +160,7 @@ export function RaceMap({
         attributionControl={false}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <LocationTracker onLocationFound={handleLocationFound} />
+        <LocationTracker onLocationFound={handleLocationFound} onDenied={() => setLocationDenied(true)} />
 
         {userPosition && (
           <>
@@ -169,6 +175,23 @@ export function RaceMap({
           </>
         )}
 
+        {/* ghost courses — thin, light, non-interactive */}
+        {ghostCourses &&
+          COURSES.map((course) => (
+            <Polyline
+              key={`ghost-${course.name}`}
+              positions={course.points}
+              pathOptions={{
+                color: course.color,
+                weight: 2,
+                opacity: 0.3,
+                lineCap: "round",
+                lineJoin: "round",
+                interactive: false,
+              }}
+            />
+          ))}
+
         {showCourses &&
           COURSES.filter((c) => visibleCourses.has(c.name)).map((course) => (
             <Polyline
@@ -180,10 +203,6 @@ export function RaceMap({
                 opacity: 0.9,
                 lineCap: "round",
                 lineJoin: "round",
-              }}
-              eventHandlers={{
-                mouseover: () => setHoveredCourse(course),
-                mouseout: () => setHoveredCourse(null),
               }}
             >
               <Popup>
@@ -222,16 +241,6 @@ export function RaceMap({
             </Marker>
           ))}
       </MapContainer>
-
-      {/* course hover tooltip */}
-      {hoveredCourse && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[1100] bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2.5 shadow-lg text-xs pointer-events-none">
-          <span className="font-bold" style={{ color: hoveredCourse.color }}>
-            {hoveredCourse.name}
-          </span>
-          <span className="text-muted ml-3 font-medium">{hoveredCourse.startTime}</span>
-        </div>
-      )}
 
       {/* legend — top right, below any HUD */}
       {showCourses && (
@@ -300,6 +309,16 @@ export function RaceMap({
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* location denied hint */}
+      {locationDenied && (
+        <div className="absolute bottom-36 left-3 right-3 z-[1000] flex justify-center">
+          <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg px-3 py-2 text-[11px] text-muted flex items-center gap-2 max-w-xs">
+            <span>enable location in your browser settings to see your position on the map</span>
+            <button onClick={() => setLocationDenied(false)} className="text-card-border hover:text-muted shrink-0">✕</button>
+          </div>
         </div>
       )}
     </>

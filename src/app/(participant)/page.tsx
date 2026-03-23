@@ -65,6 +65,7 @@ export default function MainPage() {
       <div className="absolute inset-0">
         <RaceMap
           showCourses={mode === "race"}
+          ghostCourses={mode === "quest"}
           showPOIs={mode === "race"}
           showCheckpoints={mode === "quest"}
           checkpoints={checkpoints}
@@ -239,17 +240,17 @@ export default function MainPage() {
       {showRaceInfo && mode === "race" && (
         <div className="absolute inset-0 z-[1100] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowRaceInfo(false)} />
-          <div className="relative bg-white rounded-lg mx-4 p-6 max-w-sm shadow-2xl animate-slide-up">
-            <div className="text-center mb-5">
-              <h1 className="text-xl font-bold text-foreground">
-                the great benicia run
-              </h1>
-              <p className="text-sm text-muted mt-1">
-                strait to the finish — may 18, 2026
-              </p>
-            </div>
+          <div className="relative bg-white rounded-lg mx-4 max-w-sm shadow-2xl animate-slide-up overflow-hidden">
+            <Image
+              src="/logo-header.png"
+              alt="the great benicia run"
+              width={400}
+              height={200}
+              className="w-full h-auto"
+              priority
+            />
 
-            <div className="space-y-3 text-sm text-foreground mb-6">
+            <div className="p-5 space-y-3 text-sm text-foreground">
               <div className="flex gap-3 items-start">
                 <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center shrink-0">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -268,19 +269,19 @@ export default function MainPage() {
                 </span>
                 <p><strong>courses</strong> — 5k, 10k, kids dash & more, all visible on the map</p>
               </div>
-            </div>
 
-            <div className="bg-cream rounded-lg p-3 mb-5">
-              <p className="text-xs text-foreground text-center leading-relaxed">
-                visiting or spectating? switch to <strong>raffle quest</strong> for
-                a scavenger hunt around the course — scan checkpoints, answer
-                STEAM questions, and win prizes!
-              </p>
-            </div>
+              <div className="bg-cream rounded-lg p-3">
+                <p className="text-xs text-foreground text-center leading-relaxed">
+                  visiting or spectating? switch to <strong>raffle quest</strong> for
+                  a scavenger hunt around the course — scan checkpoints, answer
+                  STEAM questions, and win prizes!
+                </p>
+              </div>
 
-            <Button variant="primary" size="xl" fullWidth onClick={() => setShowRaceInfo(false)}>
-              got it
-            </Button>
+              <Button variant="primary" size="xl" fullWidth onClick={() => setShowRaceInfo(false)}>
+                got it
+              </Button>
+            </div>
           </div>
         </div>
       )}

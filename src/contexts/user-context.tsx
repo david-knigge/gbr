@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { initUser } from "@/lib/identity";
 import { apiFetch } from "@/lib/api-client";
 import type { UserState } from "@/lib/types";
@@ -23,6 +23,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const initCalled = useRef(false);
 
   const refreshUser = useCallback(async () => {
     try {
@@ -35,6 +36,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Guard against React strict mode double-firing
+    if (initCalled.current) return;
+    initCalled.current = true;
+
     async function init() {
       try {
         await initUser();
