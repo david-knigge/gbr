@@ -25,29 +25,23 @@ export default function MainPage() {
   const [mode, setMode] = useState<Mode>("race");
   const [donateOpen, setDonateOpen] = useState(false);
   const [showQuestIntro, setShowQuestIntro] = useState(false);
-  const [showRaceInfo, setShowRaceInfo] = useState(false);
-
-  // Restore last mode from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("app_mode") as Mode | null;
-    if (saved === "quest") setMode("quest");
-  }, []);
+  const [showRaceInfo, setShowRaceInfo] = useState(true); // show on every page load
+  const [questIntroShown, setQuestIntroShown] = useState(false); // track per-session
 
   // Persist mode
   useEffect(() => {
     localStorage.setItem("app_mode", mode);
   }, [mode]);
 
-  // Show quest intro on first visit
+  // Show quest intro on first switch to quest (per session)
   useEffect(() => {
-    if (mode === "quest") {
-      const seen = localStorage.getItem("quest_intro_seen");
-      if (!seen) setShowQuestIntro(true);
+    if (mode === "quest" && !questIntroShown) {
+      setShowQuestIntro(true);
+      setQuestIntroShown(true);
     }
-  }, [mode]);
+  }, [mode, questIntroShown]);
 
   function dismissQuestIntro() {
-    localStorage.setItem("quest_intro_seen", "1");
     setShowQuestIntro(false);
   }
 
@@ -111,11 +105,12 @@ export default function MainPage() {
               </div>
               <button
                 onClick={() => setDonateOpen(true)}
-                className="ml-1 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center"
+                className="ml-1 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold"
               >
-                <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
+                donate
               </button>
             </div>
             {(user?.active_multiplier || user?.donor_badge) && (

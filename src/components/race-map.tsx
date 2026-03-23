@@ -13,30 +13,22 @@ import { POI_ICONS } from "@/lib/map-data";
 const RACE_CENTER: [number, number] = [38.0494, -122.1586];
 const DEFAULT_ZOOM = 15;
 
-// Runner SVG for checkpoint markers
-const runnerSvg = (completed: boolean) => {
+const checkpointIcon = (completed: boolean) => {
   const bg = completed ? "#22c55e" : "#7B5EA7";
-  return `<div style="
-    width: 34px; height: 34px; border-radius: 50%;
-    background: ${bg};
-    border: 3px solid white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    display: flex; align-items: center; justify-content: center;
-  "><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="14" cy="4" r="2"/>
-    <path d="M4 17l3.5-5.5L11 13l4-6 2 1"/>
-    <path d="M4 17l1.5 3"/>
-    <path d="M11 13l2.5 4"/>
-  </svg></div>`;
-};
-
-const checkpointIcon = (completed: boolean) =>
-  L.divIcon({
+  return L.divIcon({
     className: "",
-    html: runnerSvg(completed),
-    iconSize: [34, 34],
-    iconAnchor: [17, 17],
+    html: `<div style="
+      width: 32px; height: 32px; border-radius: 50%;
+      background: ${bg};
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; line-height: 1;
+    ">${completed ? "✓" : "🏃"}</div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
   });
+};
 
 const userIcon = L.divIcon({
   className: "",

@@ -35,60 +35,63 @@ body {
   z-index: 0;
 }
 
-/* leaflet popups — match app design */
+/* leaflet popups — match legend style */
 .leaflet-popup-content-wrapper {
-  background: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 0;
   font-family: var(--font-sans);
   color: var(--color-foreground);
-  overflow: hidden;
-  border-top: 3px solid var(--color-primary);
 }
 
 .leaflet-popup-content {
   margin: 0;
-  padding: 0.875rem 1rem;
-  padding-right: 2rem; /* room for close button */
-  font-size: 0.75rem;
-  line-height: 1.5;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.6875rem;
+  line-height: 1.4;
   font-weight: 500;
 }
 
 .leaflet-popup-content strong {
-  font-weight: 700;
-  font-size: 0.8125rem;
+  font-weight: 600;
+  font-size: 0.75rem;
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.125rem;
 }
 
 .leaflet-popup-tip {
-  background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .leaflet-popup-close-button {
-  top: 0.5rem !important;
-  right: 0.5rem !important;
-  width: 1.25rem !important;
-  height: 1.25rem !important;
-  font-size: 1rem !important;
-  font-weight: 700 !important;
-  color: var(--color-muted) !important;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.04);
-  transition: color 0.15s, background 0.15s;
+  top: 0.25rem !important;
+  right: 0.375rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 400 !important;
+  color: var(--color-card-border) !important;
   line-height: 1 !important;
   padding: 0 !important;
+  transition: color 0.15s;
 }
 
 .leaflet-popup-close-button:hover {
-  color: var(--color-foreground) !important;
-  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-muted) !important;
+  background: none;
+}
+
+/* no fade animation on popups */
+.leaflet-fade-anim .leaflet-popup {
+  transition: none;
+}
+
+.leaflet-popup {
+  opacity: 1 !important;
 }
 
 @keyframes slide-up {
