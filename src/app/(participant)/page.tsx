@@ -25,8 +25,13 @@ export default function MainPage() {
   const [mode, setMode] = useState<Mode>("race");
   const [donateOpen, setDonateOpen] = useState(false);
   const [showQuestIntro, setShowQuestIntro] = useState(false);
-  const [showRaceInfo, setShowRaceInfo] = useState(true); // show on every page load
-  const [questIntroShown, setQuestIntroShown] = useState(false); // track per-session
+  const [showRaceInfo, setShowRaceInfo] = useState(false);
+  const [questIntroShown, setQuestIntroShown] = useState(false);
+
+  // Show race info on mount
+  useEffect(() => {
+    setShowRaceInfo(true);
+  }, []);
 
   // Persist mode
   useEffect(() => {
@@ -132,31 +137,33 @@ export default function MainPage() {
         </div>
       )}
 
-      {/* quest: scan button — well above toggle */}
-      {mode === "quest" && !showQuestIntro && !loading && (
-        <div className="absolute bottom-28 left-4 right-4 z-[1000] flex justify-center">
-          <Link href="/quest/scan" className="w-full max-w-xs">
-            <Button variant="primary" size="lg" fullWidth>
-              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+      {/* action buttons above toggle */}
+      {!showQuestIntro && !showRaceInfo && (
+        <div className="absolute bottom-20 left-4 right-4 z-[1000] flex items-center justify-center gap-2">
+          {mode === "quest" && !loading && (
+            <Link href="/quest/scan">
+              <Button variant="primary" size="md">
+                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                </svg>
+                scan raffle checkpoint
+              </Button>
+            </Link>
+          )}
+          <div className="relative">
+            <Button variant="accent" size="md" onClick={() => setDonateOpen(true)}>
+              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
-              scan checkpoint
+              donate to STEAM
             </Button>
-          </Link>
+            {mode === "quest" && (
+              <span className="absolute -top-3 -left-2 bg-teal text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full rotate-6 animate-bounce-subtle pointer-events-none shadow-sm">
+                bonus entries!
+              </span>
+            )}
+          </div>
         </div>
-      )}
-
-      {/* race info: donate button — above toggle */}
-      {mode === "race" && (
-        <button
-          onClick={() => setDonateOpen(true)}
-          className="absolute bottom-28 left-1/2 -translate-x-1/2 z-[1000] bg-primary text-white px-5 py-3 rounded-lg shadow-lg hover:bg-primary-light active:bg-primary-dark transition-all font-medium text-sm flex items-center gap-2"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-          donate to STEAM
-        </button>
       )}
 
       {/* floating toggle */}
@@ -206,7 +213,7 @@ export default function MainPage() {
             <div className="space-y-4 text-sm text-foreground mb-6">
               <div className="flex gap-3 items-start">
                 <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
-                <p><strong>scan checkpoints</strong> around the race course using QR codes</p>
+                <p><strong>scan raffle checkpoints</strong> around the race course using QR codes</p>
               </div>
               <div className="flex gap-3 items-start">
                 <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">2</span>
@@ -241,14 +248,16 @@ export default function MainPage() {
         <div className="absolute inset-0 z-[1100] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowRaceInfo(false)} />
           <div className="relative bg-white rounded-lg mx-4 max-w-sm shadow-2xl animate-slide-up overflow-hidden">
-            <Image
-              src="/logo-header.png"
-              alt="the great benicia run"
-              width={400}
-              height={200}
-              className="w-full h-auto"
-              priority
-            />
+            <div className="p-4 pb-0">
+              <Image
+                src="/logo-header.png"
+                alt="the great benicia run"
+                width={400}
+                height={200}
+                className="w-full h-auto rounded-lg"
+                priority
+              />
+            </div>
 
             <div className="p-5 space-y-3 text-sm text-foreground">
               <div className="flex gap-3 items-start">
@@ -273,7 +282,7 @@ export default function MainPage() {
               <div className="bg-cream rounded-lg p-3">
                 <p className="text-xs text-foreground text-center leading-relaxed">
                   visiting or spectating? switch to <strong>raffle quest</strong> for
-                  a scavenger hunt around the course — scan checkpoints, answer
+                  a scavenger hunt around the course — scan raffle checkpoints, answer
                   STEAM questions, and win prizes!
                 </p>
               </div>

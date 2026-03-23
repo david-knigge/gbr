@@ -1,7 +1,7 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { CheckpointProgress } from "@/lib/types";
@@ -73,12 +73,14 @@ function getCheckpointPositions(checkpoints: CheckpointProgress[]): [number, num
 
 function LocationTracker({ onLocationFound, onDenied }: { onLocationFound: (pos: [number, number]) => void; onDenied: () => void }) {
   const map = useMap();
+  const onDeniedRef = useRef(onDenied);
+  onDeniedRef.current = onDenied;
 
   useEffect(() => {
     if (!navigator.geolocation) return;
 
     const handleError = (err: GeolocationPositionError) => {
-      if (err.code === err.PERMISSION_DENIED) onDenied();
+      if (err.code === err.PERMISSION_DENIED) onDeniedRef.current();
     };
 
     const watchId = navigator.geolocation.watchPosition(
@@ -93,7 +95,7 @@ function LocationTracker({ onLocationFound, onDenied }: { onLocationFound: (pos:
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
-  }, [map, onLocationFound, onDenied]);
+  }, [map, onLocationFound]);
 
   return null;
 }
@@ -183,8 +185,9 @@ export function RaceMap({
               positions={course.points}
               pathOptions={{
                 color: course.color,
-                weight: 2,
-                opacity: 0.3,
+                weight: 3,
+                opacity: 0.8,
+                dashArray: "6 8",
                 lineCap: "round",
                 lineJoin: "round",
                 interactive: false,
@@ -286,24 +289,28 @@ export function RaceMap({
               {poisVisible && (
                 <div className="text-[11px] text-muted space-y-1 pl-0.5">
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded-sm text-[9px] font-bold text-white flex items-center justify-center" style={{ background: "#3b82f6" }}>P</span>
+                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">🅿</span>
                     <span>parking</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded-sm text-[9px] font-bold text-white flex items-center justify-center" style={{ background: "#7B5EA7" }}>R</span>
+                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">📋</span>
                     <span>registration</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded-sm text-[9px] font-bold text-white flex items-center justify-center" style={{ background: "#22c55e" }}>S</span>
+                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">🏁</span>
                     <span>start / finish</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded-sm text-[9px] font-bold text-white flex items-center justify-center" style={{ background: "#f59e0b" }}>+</span>
+                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">💧</span>
                     <span>aid station</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3.5 h-3.5 rounded-sm text-[9px] font-bold text-white flex items-center justify-center" style={{ background: "#64748b" }}>W</span>
+                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">🚾</span>
                     <span>restrooms</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">🌭</span>
+                    <span>stands</span>
                   </div>
                 </div>
               )}

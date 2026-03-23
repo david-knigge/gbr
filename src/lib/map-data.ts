@@ -46,14 +46,16 @@ export const POIS: MapPOI[] = [
   },
 ];
 
+const POI_BG = "#3a3a4a";
+
 export const POI_ICONS: Record<string, { emoji: string; color: string }> = {
-  parking: { emoji: "P", color: "#3b82f6" },
-  registration: { emoji: "R", color: "#7B5EA7" },
-  start: { emoji: "S", color: "#22c55e" },
-  finish: { emoji: "F", color: "#ef4444" },
-  aid: { emoji: "+", color: "#f59e0b" },
-  restroom: { emoji: "W", color: "#64748b" },
-  stand: { emoji: "&#9733;", color: "#E8643B" },
-  info: { emoji: "i", color: "#4DBFB3" },
-  other: { emoji: "?", color: "#999" },
+  parking: { emoji: "🅿", color: POI_BG },
+  registration: { emoji: "📋", color: POI_BG },
+  start: { emoji: "🏁", color: POI_BG },
+  finish: { emoji: "🏁", color: POI_BG },
+  aid: { emoji: "💧", color: POI_BG },
+  restroom: { emoji: "🚾", color: POI_BG },
+  stand: { emoji: "🌭", color: POI_BG },
+  info: { emoji: "i", color: POI_BG },
+  other: { emoji: "?", color: POI_BG },
 };

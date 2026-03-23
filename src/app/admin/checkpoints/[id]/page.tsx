@@ -71,6 +71,10 @@ export default function EditCheckpointPage({ params }: { params: Promise<{ id: s
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.position_lat || !form.position_lng) {
+      setError("Please set a position on the map");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
@@ -152,7 +156,7 @@ export default function EditCheckpointPage({ params }: { params: Promise<{ id: s
         {/* Map picker for position */}
         <div>
           <label className="block text-sm font-medium mb-2">
-            Position on map (optional)
+            Position on map <span className="text-red-500">*</span>
           </label>
           <AdminMapPicker
             lat={form.position_lat ? parseFloat(form.position_lat) : null}
