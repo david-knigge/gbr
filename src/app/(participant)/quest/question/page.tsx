@@ -88,7 +88,7 @@ function QuestionContent() {
 
         <Card className="text-center">
           <div className="text-4xl font-bold text-teal">+{totalEarned}</div>
-          <div className="text-xs font-bold text-muted uppercase tracking-wider mt-1">
+          <div className="text-xs font-bold text-muted tracking-wide mt-1">
             Raffle Entries Earned
           </div>
           {entriesFromScan > 0 && (
@@ -133,7 +133,7 @@ function QuestionContent() {
   return (
     <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-5 pt-8 space-y-5 pb-24">
       <div className="text-center">
-        <p className="text-xs font-bold text-teal uppercase tracking-widest">
+        <p className="text-xs font-bold text-teal tracking-wide">
           {checkpointName}
         </p>
         {entriesFromScan > 0 && (

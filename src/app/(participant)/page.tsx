@@ -30,8 +30,8 @@ export default function RaceInfoPage() {
         <Image
           src="/logo-square.png"
           alt="Great Benicia Run"
-          width={44}
-          height={44}
+          width={88}
+          height={88}
           className="rounded-lg"
         />
         <div>
@@ -47,7 +47,7 @@ export default function RaceInfoPage() {
       {/* Donate FAB */}
       <button
         onClick={() => setDonateOpen(true)}
-        className="absolute bottom-18 right-4 z-[1000] bg-primary text-white px-5 py-3 rounded-lg shadow-lg hover:bg-primary-light active:bg-primary-dark transition-all font-bold text-sm uppercase tracking-wide flex items-center gap-2"
+        className="absolute bottom-24 right-4 z-[1000] bg-primary text-white px-5 py-3 rounded-lg shadow-lg hover:bg-primary-light active:bg-primary-dark transition-all font-bold text-sm tracking-wide flex items-center gap-2"
       >
         <svg
           className="w-5 h-5"

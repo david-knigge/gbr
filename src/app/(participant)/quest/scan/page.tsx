@@ -83,7 +83,7 @@ export default function ScanPage() {
               setError(null);
               setLoading(false);
             }}
-            className="block mx-auto mt-2 text-teal font-bold text-sm uppercase tracking-wide"
+            className="block mx-auto mt-2 text-teal font-bold text-sm tracking-wide"
           >
             Try again
           </button>

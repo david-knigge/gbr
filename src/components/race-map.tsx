@@ -58,12 +58,17 @@ function poiIcon(type: string) {
   });
 }
 
-// Distribute checkpoints along the 5k course
-function getCheckpointPositions(count: number): [number, number][] {
+// Get checkpoint positions — use DB positions when available, fall back to algorithmic distribution
+function getCheckpointPositions(checkpoints: CheckpointProgress[]): [number, number][] {
+  if (checkpoints.length === 0) return [];
   const fiveK = COURSES.find((c) => c.name === "5k");
-  if (!fiveK || count === 0) return [];
-  const step = Math.floor(fiveK.points.length / (count + 1));
-  return Array.from({ length: count }, (_, i) => fiveK.points[(i + 1) * step] || RACE_CENTER);
+  const step = fiveK ? Math.floor(fiveK.points.length / (checkpoints.length + 1)) : 0;
+  return checkpoints.map((cp, i) => {
+    if (cp.position_lat && cp.position_lng) {
+      return [cp.position_lat, cp.position_lng];
+    }
+    return fiveK ? (fiveK.points[(i + 1) * step] || RACE_CENTER) : RACE_CENTER;
+  });
 }
 
 function LocationTracker({ onLocationFound }: { onLocationFound: (pos: [number, number]) => void }) {
@@ -113,7 +118,7 @@ export function RaceMap({
   const [hoveredCourse, setHoveredCourse] = useState<Course | null>(null);
   const [loadedPois, setLoadedPois] = useState<MapPOI[]>([]);
 
-  const positions = getCheckpointPositions(checkpoints.length);
+  const positions = getCheckpointPositions(checkpoints);
 
   // Load POIs from API if not provided as prop
   useEffect(() => {
@@ -186,7 +191,6 @@ export function RaceMap({
             >
               <Popup>
                 <strong>{course.name}</strong>
-                <br />
                 Start: {course.startTime}
               </Popup>
             </Polyline>
@@ -199,8 +203,7 @@ export function RaceMap({
             <Marker key={`${poi.name}-${poi.position[0]}`} position={poi.position} icon={poiIcon(poi.type)}>
               <Popup>
                 <strong>{poi.name}</strong>
-                <br />
-                <span style={{ fontSize: "12px" }}>{poi.description}</span>
+                {poi.description}
               </Popup>
             </Marker>
           ))}
@@ -214,15 +217,12 @@ export function RaceMap({
               icon={checkpointIcon(cp.is_completed)}
             >
               <Popup>
-                <div style={{ textAlign: "center" }}>
-                  <strong>{cp.name}</strong>
-                  <br />
-                  {cp.is_completed ? (
-                    <span style={{ color: "#22c55e", fontSize: "12px", fontWeight: 500 }}>Completed</span>
-                  ) : (
-                    <span style={{ color: "#7B5EA7", fontSize: "12px", fontWeight: 500 }}>Not yet scanned</span>
-                  )}
-                </div>
+                <strong>{cp.name}</strong>
+                {cp.is_completed ? (
+                  <span style={{ color: "#22c55e", fontWeight: 700 }}>Completed</span>
+                ) : (
+                  <span style={{ color: "#7B5EA7", fontWeight: 700 }}>Not yet scanned</span>
+                )}
               </Popup>
             </Marker>
           ))}
@@ -243,7 +243,7 @@ export function RaceMap({
         <div className="absolute top-4 right-4 z-[1000]">
           <button
             onClick={() => setLegendOpen(!legendOpen)}
-            className="bg-white/95 backdrop-blur-sm rounded-lg px-3.5 py-2.5 shadow-lg text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2"
+            className="bg-white/95 backdrop-blur-sm rounded-lg px-3.5 py-2.5 shadow-lg text-xs font-bold text-foreground tracking-wide flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -252,7 +252,7 @@ export function RaceMap({
           </button>
           {legendOpen && (
             <div className="mt-1.5 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4 space-y-2.5 min-w-[200px]">
-              <div className="text-[10px] font-bold text-muted uppercase tracking-widest">Courses</div>
+              <div className="text-[10px] font-bold text-muted tracking-wide">Courses</div>
               {COURSES.map((course) => (
                 <label key={course.name} className="flex items-center gap-2.5 cursor-pointer">
                   <input

@@ -38,6 +38,8 @@ export async function PUT(req: NextRequest, context: RouteContext) {
       question_id: body.question_id || null,
       sort_order: body.sort_order ?? null,
       is_active: body.is_active,
+      position_lat: body.position_lat ?? null,
+      position_lng: body.position_lng ?? null,
     })
     .eq("id", id)
     .select()

@@ -3,7 +3,7 @@ import { getUserId, serverError, getSupabaseAdmin } from "@/lib/api-helpers";
 import type { CheckpointProgress } from "@/lib/types";
 
 // Cache checkpoints in memory — they don't change during the race
-let cachedCheckpoints: { id: string; name: string; slug: string; sort_order: number | null }[] | null = null;
+let cachedCheckpoints: { id: string; name: string; slug: string; sort_order: number | null; position_lat: number | null; position_lng: number | null }[] | null = null;
 let cacheTime = 0;
 const CACHE_TTL = 60_000; // 1 minute
 
@@ -14,7 +14,7 @@ async function getCheckpoints() {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("checkpoints")
-    .select("id, name, slug, sort_order")
+    .select("id, name, slug, sort_order, position_lat, position_lng")
     .eq("is_active", true)
     .order("sort_order", { ascending: true });
 
@@ -45,6 +45,8 @@ export async function GET(req: NextRequest) {
       slug: cp.slug,
       sort_order: cp.sort_order,
       is_completed: completedIds.has(cp.id),
+      position_lat: cp.position_lat,
+      position_lng: cp.position_lng,
     }));
 
     return NextResponse.json(result);

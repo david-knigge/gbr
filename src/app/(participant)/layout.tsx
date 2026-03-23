@@ -10,8 +10,8 @@ export default function ParticipantLayout({
 }) {
   return (
     <UserProvider>
-      <div className="fixed inset-0 flex flex-col">
-        <div className="flex-1 relative overflow-hidden">
+      <div className="fixed inset-0">
+        <div className="w-full h-full relative overflow-hidden">
           {children}
         </div>
         <BottomNav />

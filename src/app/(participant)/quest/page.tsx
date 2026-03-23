@@ -110,13 +110,13 @@ export default function QuestPage() {
           <div className="bg-white/95 backdrop-blur-sm rounded-lg px-5 py-4 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs font-bold text-muted uppercase tracking-wider">Entries</div>
+                <div className="text-xs font-bold text-muted tracking-wide">Entries</div>
                 <div className="text-3xl font-bold text-teal leading-none mt-1">
                   {user?.raffle_entries_total ?? 0}
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-xs font-bold text-muted uppercase tracking-wider">Checkpoints</div>
+                <div className="text-xs font-bold text-muted tracking-wide">Checkpoints</div>
                 <div className="text-2xl font-bold text-foreground leading-none mt-1">
                   {completed}<span className="text-muted font-normal">/{total}</span>
                 </div>
@@ -125,12 +125,12 @@ export default function QuestPage() {
             {(user?.active_multiplier || user?.donor_badge) && (
               <div className="flex gap-2 mt-3">
                 {user?.active_multiplier && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-teal/10 text-teal rounded text-xs font-bold uppercase tracking-wide">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-teal/10 text-teal rounded text-xs font-bold tracking-wide">
                     2x Boost — {user.active_multiplier.remaining_uses} left
                   </span>
                 )}
                 {user?.donor_badge && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/10 text-primary rounded text-xs font-bold uppercase tracking-wide">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/10 text-primary rounded text-xs font-bold tracking-wide">
                     Donor
                   </span>
                 )}
@@ -142,7 +142,7 @@ export default function QuestPage() {
 
       {/* Scan button - bottom center */}
       {!showIntro && !loading && (
-        <div className="absolute bottom-18 left-4 right-4 z-[1000] flex justify-center">
+        <div className="absolute bottom-24 left-4 right-4 z-[1000] flex justify-center">
           <Link href="/quest/scan" className="w-full max-w-sm">
             <Button variant="primary" size="xl" fullWidth>
               <svg
@@ -168,7 +168,7 @@ export default function QuestPage() {
       {!showIntro && (
         <button
           onClick={() => setDonateOpen(true)}
-          className="absolute bottom-32 right-4 z-[1000] bg-primary text-white px-4 py-2.5 rounded-lg shadow-lg font-bold text-xs uppercase tracking-wide flex items-center gap-1.5"
+          className="absolute bottom-32 right-4 z-[1000] bg-primary text-white px-4 py-2.5 rounded-lg shadow-lg font-bold text-xs tracking-wide flex items-center gap-1.5"
         >
           <svg
             className="w-4 h-4"

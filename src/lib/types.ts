@@ -155,4 +155,6 @@ export interface CheckpointProgress {
   slug: string;
   sort_order: number | null;
   is_completed: boolean;
+  position_lat: number | null;
+  position_lng: number | null;
 }

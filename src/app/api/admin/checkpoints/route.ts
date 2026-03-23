@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
       entries_awarded: body.entries_awarded ?? 1,
       question_id: body.question_id || null,
       sort_order: body.sort_order ?? null,
+      position_lat: body.position_lat ?? null,
+      position_lng: body.position_lng ?? null,
     })
     .select()
     .single();

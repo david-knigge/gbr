@@ -35,6 +35,55 @@ body {
   z-index: 0;
 }
 
+/* Styled Leaflet popups to match app design */
+.leaflet-popup-content-wrapper {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  font-family: var(--font-sans);
+  color: var(--color-foreground);
+}
+
+.leaflet-popup-content {
+  margin: 0.75rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.leaflet-popup-content strong {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  display: block;
+  margin-bottom: 0.125rem;
+}
+
+.leaflet-popup-tip {
+  background: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-close-button {
+  top: 0.375rem !important;
+  right: 0.375rem !important;
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  color: var(--color-muted) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  transition: color 0.15s, background 0.15s;
+}
+
+.leaflet-popup-close-button:hover {
+  color: var(--color-foreground) !important;
+  background: rgba(0, 0, 0, 0.05);
+}
+
 @keyframes slide-up {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }

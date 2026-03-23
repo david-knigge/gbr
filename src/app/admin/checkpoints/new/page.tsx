@@ -1,7 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const AdminMapPicker = dynamic(
+  () => import("@/components/admin-map-picker").then((m) => m.AdminMapPicker),
+  { ssr: false, loading: () => <div className="h-[300px] bg-gray-100 rounded animate-pulse" /> }
+);
 
 interface QuestionOption {
   id: string;
@@ -18,6 +24,8 @@ export default function NewCheckpointPage() {
     entries_awarded: 1,
     question_id: "",
     sort_order: "",
+    position_lat: "",
+    position_lng: "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -33,6 +41,10 @@ export default function NewCheckpointPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  const handleMapChange = useCallback((lat: number, lng: number) => {
+    setForm((prev) => ({ ...prev, position_lat: String(lat), position_lng: String(lng) }));
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -46,6 +58,8 @@ export default function NewCheckpointPage() {
           entries_awarded: Number(form.entries_awarded),
           sort_order: form.sort_order ? Number(form.sort_order) : null,
           question_id: form.question_id || null,
+          position_lat: form.position_lat ? parseFloat(form.position_lat) : null,
+          position_lng: form.position_lng ? parseFloat(form.position_lng) : null,
         }),
       });
       if (!res.ok) {
@@ -61,7 +75,7 @@ export default function NewCheckpointPage() {
   }
 
   return (
-    <div className="max-w-xl">
+    <div className="max-w-2xl">
       <h1 className="text-2xl font-bold mb-6">New Checkpoint</h1>
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">
         <div>
@@ -91,6 +105,19 @@ export default function NewCheckpointPage() {
             rows={3}
           />
         </div>
+
+        {/* Map picker for position */}
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Position on map (optional)
+          </label>
+          <AdminMapPicker
+            lat={form.position_lat ? parseFloat(form.position_lat) : null}
+            lng={form.position_lng ? parseFloat(form.position_lng) : null}
+            onChange={handleMapChange}
+          />
+        </div>
+
         <div>
           <label className="block text-sm font-medium mb-1">Entries Awarded</label>
           <input

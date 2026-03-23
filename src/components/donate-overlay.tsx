@@ -83,7 +83,7 @@ export function DonateOverlay({ open, onClose }: DonateOverlayProps) {
 
           {/* Donor Perks */}
           <div>
-            <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-3">
+            <h3 className="text-xs font-bold text-muted tracking-wide mb-3">
               Donor Rewards
             </h3>
             <div className="space-y-3">
@@ -115,7 +115,7 @@ export function DonateOverlay({ open, onClose }: DonateOverlayProps) {
           {/* App Code */}
           {user && (
             <div className="bg-cream border border-card-border rounded-lg p-4 text-center">
-              <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">
+              <p className="text-xs font-bold text-muted tracking-wide mb-2">
                 Your Donation Code
               </p>
               <div className="text-2xl font-mono font-bold text-foreground tracking-widest">

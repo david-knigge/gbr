@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
+
+const AdminMapPicker = dynamic(
+  () => import("@/components/admin-map-picker").then((m) => m.AdminMapPicker),
+  { ssr: false, loading: () => <div className="h-[300px] bg-gray-100 rounded animate-pulse" /> }
+);
 
 const POI_TYPES = [
   "parking",
@@ -71,6 +77,14 @@ export default function POIsAdminPage() {
       sort_order: String(poi.sort_order),
     });
   }
+
+  const handleMapChange = useCallback((lat: number, lng: number) => {
+    setForm((prev) => ({
+      ...prev,
+      position_lat: String(lat),
+      position_lng: String(lng),
+    }));
+  }, []);
 
   async function handleSave() {
     setSaving(true);
@@ -143,10 +157,23 @@ export default function POIsAdminPage() {
 
       {/* Edit/Create form */}
       {editing && (
-        <div className="bg-white rounded shadow p-4 mb-6 space-y-3">
-          <h2 className="font-semibold">
+        <div className="bg-white rounded shadow p-4 mb-6 space-y-4">
+          <h2 className="font-semibold text-lg">
             {editing === "new" ? "New POI" : "Edit POI"}
           </h2>
+
+          {/* Map picker */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Position — click map or drag marker
+            </label>
+            <AdminMapPicker
+              lat={form.position_lat ? parseFloat(form.position_lat) : null}
+              lng={form.position_lng ? parseFloat(form.position_lng) : null}
+              onChange={handleMapChange}
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -174,32 +201,6 @@ export default function POIsAdminPage() {
                   </option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Latitude
-              </label>
-              <input
-                className="w-full border rounded px-3 py-2 text-sm"
-                value={form.position_lat}
-                onChange={(e) =>
-                  setForm({ ...form, position_lat: e.target.value })
-                }
-                placeholder="38.0494"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Longitude
-              </label>
-              <input
-                className="w-full border rounded px-3 py-2 text-sm"
-                value={form.position_lng}
-                onChange={(e) =>
-                  setForm({ ...form, position_lng: e.target.value })
-                }
-                placeholder="-122.1586"
-              />
             </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
