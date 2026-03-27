@@ -68,12 +68,18 @@ function poiIcon(type: string) {
   });
 }
 
-// Structured popup — title with teal dot, description left-aligned
-function PopupContent({ title, desc }: { title: string; desc?: string }) {
+// Structured popup — teal dot + bold title, detail lines below
+function PopupContent({ title, details }: { title: string; details?: { text: string; type?: "desc" | "time" | "location" | "status" }[] }) {
   return (
     <>
-      <strong>{title.toLowerCase()}</strong>
-      {desc && <span className="popup-desc" dangerouslySetInnerHTML={{ __html: desc }} />}
+      <span className="popup-title">{title.toLowerCase()}</span>
+      {details?.map((d, i) =>
+        d.type === "status" ? (
+          <span key={i} className="popup-status" dangerouslySetInnerHTML={{ __html: d.text }} />
+        ) : (
+          <span key={i} className="popup-detail">{d.text}</span>
+        )
+      )}
     </>
   );
 }
@@ -237,7 +243,7 @@ export function RaceMap({
                 lineJoin: "round",
               }}
             >
-              <Popup><PopupContent title={course.name} desc={`start: ${course.startTime}`} /></Popup>
+              <Popup><PopupContent title={course.name} details={[{ text: course.startTime, type: "time" }]} /></Popup>
             </Polyline>
           ))}
 
@@ -245,7 +251,7 @@ export function RaceMap({
           poisVisible &&
           filteredPois.map((poi) => (
             <Marker key={`${poi.name}-${poi.position[0]}`} position={poi.position} icon={poiIcon(poi.type)}>
-              <Popup><PopupContent title={poi.name} desc={poi.description} /></Popup>
+              <Popup><PopupContent title={poi.name} details={poi.description ? [{ text: poi.description }] : undefined} /></Popup>
             </Marker>
           ))}
 
@@ -259,9 +265,12 @@ export function RaceMap({
               <Popup>
                 <PopupContent
                   title={`#${cp.sort_order != null ? cp.sort_order : i} ${cp.name}`}
-                  desc={cp.is_completed
-                    ? '<span style="color:#22c55e;font-weight:600">completed</span>'
-                    : '<span style="color:#7B5EA7;font-weight:600">not yet scanned</span>'}
+                  details={[{
+                    text: cp.is_completed
+                      ? '<span style="color:#22c55e">completed</span>'
+                      : '<span style="color:#7B5EA7">not yet scanned</span>',
+                    type: "status",
+                  }]}
                 />
               </Popup>
             </Marker>
