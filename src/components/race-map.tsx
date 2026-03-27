@@ -68,21 +68,50 @@ function poiIcon(type: string) {
   });
 }
 
-// Structured popup — teal dot + bold title, detail lines below
-function PopupContent({ title, details }: { title: string; details?: { text: string; type?: "desc" | "time" | "location" | "status" }[] }) {
+// Structured popup — bold title, detail rows with icons on separate lines
+interface PopupDetail {
+  text: string;
+  icon?: "pin" | "clock" | "info" | "status";
+}
+
+function PopupContent({ title, details }: { title: string; details?: PopupDetail[] }) {
+  const iconClass: Record<string, string> = {
+    pin: "ph-bold ph-map-pin",
+    clock: "ph-bold ph-clock",
+    info: "ph-bold ph-info",
+    status: "ph-bold ph-check-circle",
+  };
   return (
     <>
       <span className="popup-title">{title.toLowerCase()}</span>
-      {details?.map((d, i) =>
-        d.type === "status" ? (
-          <span key={i} className="popup-status" dangerouslySetInnerHTML={{ __html: d.text }} />
-        ) : (
-          <span key={i} className="popup-detail">{d.text}</span>
-        )
-      )}
+      {details?.map((d, i) => (
+        <span
+          key={i}
+          className={`popup-row${d.icon === "status" ? " popup-status" : ""}`}
+          {...(d.icon === "status" ? {} : {})}
+        >
+          {d.icon && <i className={iconClass[d.icon] || iconClass.info} />}
+          <span dangerouslySetInnerHTML={{ __html: d.text }} />
+        </span>
+      ))}
     </>
   );
 }
+
+// Split POI description into typed detail rows on separate lines
+// e.g. "First Street Green — opens 7:00 AM" → [{pin, "first street green"}, {clock, "opens 7:00 am"}]
+function parsePoiDetails(desc?: string): PopupDetail[] | undefined {
+  if (!desc) return undefined;
+  const parts = desc.split(" — ").map((s) => s.trim()).filter(Boolean);
+  if (parts.length === 0) return undefined;
+
+  const timePattern = /\b\d{1,2}:\d{2}\s*(am|pm|AM|PM)\b/;
+  return parts.map((part) => ({
+    text: part,
+    icon: timePattern.test(part) ? "clock" as const : "pin" as const,
+  }));
+}
+
 
 function LocationTracker({ onLocationFound, onDenied }: { onLocationFound: (pos: [number, number]) => void; onDenied: () => void }) {
   const map = useMap();
@@ -243,7 +272,7 @@ export function RaceMap({
                 lineJoin: "round",
               }}
             >
-              <Popup><PopupContent title={course.name} details={[{ text: course.startTime, type: "time" }]} /></Popup>
+              <Popup><PopupContent title={course.name} details={[{ text: course.startTime, icon: "clock" }]} /></Popup>
             </Polyline>
           ))}
 
@@ -251,7 +280,7 @@ export function RaceMap({
           poisVisible &&
           filteredPois.map((poi) => (
             <Marker key={`${poi.name}-${poi.position[0]}`} position={poi.position} icon={poiIcon(poi.type)}>
-              <Popup><PopupContent title={poi.name} details={poi.description ? [{ text: poi.description }] : undefined} /></Popup>
+              <Popup><PopupContent title={poi.name} details={parsePoiDetails(poi.description)} /></Popup>
             </Marker>
           ))}
 
@@ -269,7 +298,7 @@ export function RaceMap({
                     text: cp.is_completed
                       ? '<span style="color:#22c55e">completed</span>'
                       : '<span style="color:#7B5EA7">not yet scanned</span>',
-                    type: "status",
+                    icon: "status",
                   }]}
                 />
               </Popup>
