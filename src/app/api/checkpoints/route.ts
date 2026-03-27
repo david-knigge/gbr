@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getUserId, serverError, getSupabaseAdmin } from "@/lib/api-helpers";
-import type { CheckpointProgress } from "@/lib/types";
+import { NextResponse } from "next/server";
+import { serverError, getSupabaseAdmin } from "@/lib/api-helpers";
 
 // Cache checkpoints in memory — they don't change during the race
 let cachedCheckpoints: { id: string; name: string; slug: string; sort_order: number | null; position_lat: number | null; position_lng: number | null }[] | null = null;
@@ -12,45 +11,33 @@ async function getCheckpoints() {
     return cachedCheckpoints;
   }
   const supabase = getSupabaseAdmin();
+
   const { data, error } = await supabase
     .from("checkpoints")
     .select("id, name, slug, sort_order, position_lat, position_lng")
     .eq("is_active", true)
     .order("sort_order", { ascending: true });
 
-  if (error) throw error;
-  cachedCheckpoints = data || [];
+  if (error) throw new Error(error.message);
+
+  cachedCheckpoints = (data || []).map((cp) => ({
+    id: cp.id,
+    name: cp.name,
+    slug: cp.slug,
+    sort_order: cp.sort_order,
+    position_lat: cp.position_lat ?? null,
+    position_lng: cp.position_lng ?? null,
+  }));
   cacheTime = Date.now();
   return cachedCheckpoints;
 }
 
-export async function GET(req: NextRequest) {
+// No user needed — completion status tracked client-side
+export async function GET() {
   try {
-    const userId = getUserId(req);
     const checkpoints = await getCheckpoints();
-
-    let completedIds = new Set<string>();
-    if (userId) {
-      const supabase = getSupabaseAdmin();
-      const { data: scans } = await supabase
-        .from("scans")
-        .select("checkpoint_id")
-        .eq("user_id", userId);
-      completedIds = new Set((scans || []).map((s) => s.checkpoint_id));
-    }
-
-    const result: CheckpointProgress[] = checkpoints.map((cp) => ({
-      id: cp.id,
-      name: cp.name,
-      slug: cp.slug,
-      sort_order: cp.sort_order,
-      is_completed: completedIds.has(cp.id),
-      position_lat: cp.position_lat,
-      position_lng: cp.position_lng,
-    }));
-
-    return NextResponse.json(result);
+    return NextResponse.json(checkpoints);
   } catch (e) {
-    return serverError(`Checkpoints error: ${e}`);
+    return serverError(`Checkpoints error: ${e instanceof Error ? e.message : String(e)}`);
   }
 }

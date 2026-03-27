@@ -5,13 +5,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const supabase = getSupabaseAdmin();
   const { id } = await params;
   const body = await req.json();
-  const { name, type, position_lat, position_lng, description, is_active, sort_order } = body;
+  const { name, type, category, position_lat, position_lng, description, is_active, sort_order } = body;
 
   const { data, error } = await supabase
     .from("pois")
     .update({
       name,
       type,
+      category: category || "race",
       position_lat,
       position_lng,
       description,

@@ -5,7 +5,7 @@ export async function GET() {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("pois")
-    .select("id, name, type, position_lat, position_lng, description")
+    .select("id, name, type, category, position_lat, position_lng, description")
     .eq("is_active", true)
     .order("sort_order");
 
@@ -17,6 +17,7 @@ export async function GET() {
         id: p.name,
         name: p.name,
         type: p.type,
+        category: p.category,
         position: p.position,
         description: p.description,
       }))
@@ -28,6 +29,7 @@ export async function GET() {
       id: p.id,
       name: p.name,
       type: p.type,
+      category: p.category || "race",
       position: [p.position_lat, p.position_lng] as [number, number],
       description: p.description,
     }))

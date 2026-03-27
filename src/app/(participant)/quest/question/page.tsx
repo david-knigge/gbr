@@ -4,21 +4,17 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { apiFetch } from "@/lib/api-client";
-import { useUser } from "@/contexts/user-context";
-import type { AnswerResponse } from "@/lib/types";
+import { markQuestionAnswered, getCompletedCount } from "@/lib/quest-store";
 
 function QuestionContent() {
   const router = useRouter();
   const params = useSearchParams();
-  const { refreshUser } = useUser();
 
   const checkpointId = params.get("checkpoint_id") || "";
   const checkpointName = params.get("checkpoint_name") || "checkpoint";
-  const questionId = params.get("question_id") || "";
   const prompt = params.get("prompt") || "";
-  const entriesFromScan = parseInt(params.get("entries_awarded") || "0");
-  const milestone = params.get("milestone");
+  const correctAnswer = params.get("correct_answer") || "";
+  const explanation = params.get("explanation") || "";
 
   const answers = [
     { key: "a", text: params.get("answer_a") || "" },
@@ -28,37 +24,21 @@ function QuestionContent() {
   ];
 
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [result, setResult] = useState<AnswerResponse | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<{ correct: boolean } | null>(null);
 
-  async function handleSubmit() {
+  function handleSubmit() {
     if (!selectedAnswer) return;
-    setSubmitting(true);
-
-    try {
-      const res = await apiFetch<AnswerResponse>("/api/question/answer", {
-        method: "POST",
-        body: JSON.stringify({
-          checkpoint_id: checkpointId,
-          question_id: questionId,
-          selected_answer: selectedAnswer,
-        }),
-      });
-      setResult(res);
-      await refreshUser();
-    } catch (e) {
-      console.error("Answer submission failed:", e);
-    } finally {
-      setSubmitting(false);
-    }
+    const correct = selectedAnswer === correctAnswer;
+    markQuestionAnswered(checkpointId, correct);
+    setResult({ correct });
   }
 
   if (result) {
-    const totalEarned = entriesFromScan + result.entries_awarded;
+    const completed = getCompletedCount();
     return (
       <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-5 pt-8 space-y-5 pb-24">
         <div className="text-center">
-          {result.is_correct ? (
+          {result.correct ? (
             <>
               <div className="w-16 h-16 rounded-lg bg-success/10 flex items-center justify-center mx-auto mb-3">
                 <svg className="w-8 h-8 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -79,30 +59,24 @@ function QuestionContent() {
           )}
         </div>
 
-        <Card>
-          <p className="text-sm text-foreground leading-relaxed">
-            {result.explanation}
-          </p>
-        </Card>
+        {explanation && (
+          <Card>
+            <p className="text-sm text-foreground leading-relaxed">
+              {explanation}
+            </p>
+          </Card>
+        )}
 
         <Card className="text-center">
-          <div className="text-4xl font-bold text-teal">+{totalEarned}</div>
+          <div className="text-4xl font-bold text-teal">{completed}/10</div>
           <div className="text-xs font-medium text-muted mt-1">
-            raffle entries earned
+            checkpoints completed
           </div>
-          {entriesFromScan > 0 && (
-            <p className="text-sm text-muted mt-3">
-              {entriesFromScan} from scan{result.entries_awarded > 0 ? ` + ${result.entries_awarded} for correct answer` : ""}
+          {completed === 10 && (
+            <p className="text-sm text-success font-bold mt-3">
+              you completed the STEAM quest! show this at registration for your reward
             </p>
           )}
-          {milestone && (
-            <p className="text-sm text-primary font-bold mt-1">
-              +{milestone} bonus entries for milestone!
-            </p>
-          )}
-          <div className="mt-4 pt-3 border-t border-card-border text-sm text-muted">
-            total: <span className="font-bold text-foreground text-lg">{result.new_total}</span> entries
-          </div>
         </Card>
 
         <div className="space-y-3">
@@ -112,7 +86,7 @@ function QuestionContent() {
             fullWidth
             onClick={() => router.push("/")}
           >
-            continue
+            back to map
           </Button>
 
           <Button
@@ -134,11 +108,6 @@ function QuestionContent() {
         <p className="text-xs font-bold text-teal">
           {checkpointName.toLowerCase()}
         </p>
-        {entriesFromScan > 0 && (
-          <p className="text-sm text-success font-bold mt-2">
-            +{entriesFromScan} entries from scan
-          </p>
-        )}
       </div>
 
       <Card>
@@ -175,9 +144,9 @@ function QuestionContent() {
         size="lg"
         fullWidth
         onClick={handleSubmit}
-        disabled={!selectedAnswer || submitting}
+        disabled={!selectedAnswer}
       >
-        {submitting ? "submitting..." : "submit answer"}
+        submit answer
       </Button>
     </div>
   );

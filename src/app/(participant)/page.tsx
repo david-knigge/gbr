@@ -4,9 +4,8 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useUser } from "@/contexts/user-context";
 import { Button } from "@/components/ui/button";
-import { DonateOverlay } from "@/components/donate-overlay";
+import { getCompletedCount, getScannedCount } from "@/lib/quest-store";
 
 const RaceMap = dynamic(
   () => import("@/components/race-map").then((m) => m.RaceMap),
@@ -18,27 +17,30 @@ const RaceMap = dynamic(
   }
 );
 
-type Mode = "race" | "quest";
+type Mode = "race" | "visitor" | "quest";
 
 export default function MainPage() {
-  const { user, loading } = useUser();
   const [mode, setMode] = useState<Mode>("race");
-  const [donateOpen, setDonateOpen] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
   const [showQuestIntro, setShowQuestIntro] = useState(false);
-  const [showRaceInfo, setShowRaceInfo] = useState(false);
   const [questIntroShown, setQuestIntroShown] = useState(false);
+  const [scanned, setScanned] = useState(0);
+  const [completed, setCompleted] = useState(0);
 
   // Show race info on mount
   useEffect(() => {
-    setShowRaceInfo(true);
+    setShowIntro(true);
   }, []);
 
-  // Persist mode
+  // Refresh quest progress when switching to quest
   useEffect(() => {
-    localStorage.setItem("app_mode", mode);
+    if (mode === "quest") {
+      setScanned(getScannedCount());
+      setCompleted(getCompletedCount());
+    }
   }, [mode]);
 
-  // Show quest intro on first switch to quest (per session)
+  // Show quest intro on first switch (per session)
   useEffect(() => {
     if (mode === "quest" && !questIntroShown) {
       setShowQuestIntro(true);
@@ -46,23 +48,14 @@ export default function MainPage() {
     }
   }, [mode, questIntroShown]);
 
-  function dismissQuestIntro() {
-    setShowQuestIntro(false);
-  }
-
   function handleToggle(newMode: Mode) {
     if (newMode === mode) {
-      // Re-tap opens explainer
       if (mode === "quest") setShowQuestIntro(true);
-      if (mode === "race") setShowRaceInfo(true);
+      if (mode === "race") setShowIntro(true);
     } else {
       setMode(newMode);
     }
   }
-
-  const checkpoints = user?.checkpoints ?? [];
-  const completed = checkpoints.filter((c) => c.is_completed).length;
-  const total = checkpoints.length;
 
   return (
     <>
@@ -70,10 +63,10 @@ export default function MainPage() {
       <div className="absolute inset-0">
         <RaceMap
           showCourses={mode === "race"}
-          ghostCourses={mode === "quest"}
-          showPOIs={mode === "race"}
+          ghostCourses={mode !== "race"}
+          showPOIs={mode === "race" || mode === "visitor"}
+          poiCategory={mode === "visitor" ? "visitor" : "race"}
           showCheckpoints={mode === "quest"}
-          checkpoints={checkpoints}
         />
       </div>
 
@@ -92,151 +85,136 @@ export default function MainPage() {
         </div>
       )}
 
+      {/* visitor info: header */}
+      {mode === "visitor" && (
+        <div className="absolute top-3 left-3 z-[1000]">
+          <div className="bg-white/95 backdrop-blur-sm rounded-lg px-4 py-3 shadow-lg">
+            <div className="text-sm font-bold text-foreground">first street & downtown</div>
+            <div className="text-[11px] text-muted">shops, parking & things to see</div>
+          </div>
+        </div>
+      )}
+
       {/* quest: HUD */}
-      {mode === "quest" && !showQuestIntro && !loading && (
+      {mode === "quest" && !showQuestIntro && (
         <div className="absolute top-3 left-3 z-[1000]">
           <div className="bg-white/95 backdrop-blur-sm rounded-lg px-4 py-3 shadow-lg">
             <div className="flex items-center gap-5">
               <div>
-                <div className="text-[11px] font-medium text-muted">entries</div>
-                <div className="text-2xl font-bold text-teal leading-none mt-0.5">
-                  {user?.raffle_entries_total ?? 0}
+                <div className="text-[11px] font-medium text-muted">checkpoints</div>
+                <div className="text-xl font-bold text-foreground leading-none mt-0.5">
+                  {completed}<span className="text-muted font-normal">/10</span>
                 </div>
               </div>
               <div>
-                <div className="text-[11px] font-medium text-muted">checkpoints</div>
-                <div className="text-xl font-bold text-foreground leading-none mt-0.5">
-                  {completed}<span className="text-muted font-normal">/{total}</span>
+                <div className="text-[11px] font-medium text-muted">scanned</div>
+                <div className="text-xl font-bold text-teal leading-none mt-0.5">
+                  {scanned}
                 </div>
               </div>
-              <button
-                onClick={() => setDonateOpen(true)}
-                className="ml-1 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                donate
-              </button>
             </div>
-            {(user?.active_multiplier || user?.donor_badge) && (
-              <div className="flex gap-2 mt-2">
-                {user?.active_multiplier && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal/10 text-teal rounded text-[11px] font-bold">
-                    2x boost — {user.active_multiplier.remaining_uses} left
-                  </span>
-                )}
-                {user?.donor_badge && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary rounded text-[11px] font-bold">
-                    donor
-                  </span>
-                )}
-              </div>
-            )}
           </div>
         </div>
       )}
 
       {/* action buttons above toggle */}
-      {!showQuestIntro && !showRaceInfo && (
+      {!showQuestIntro && !showIntro && (
         <div className="absolute bottom-20 left-4 right-4 z-[1000] flex items-center justify-center gap-2">
-          {mode === "quest" && !loading && (
+          {mode === "quest" && (
             <Link href="/quest/scan">
               <Button variant="primary" size="md">
                 <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                 </svg>
-                scan raffle checkpoint
+                scan checkpoint
               </Button>
             </Link>
           )}
-          <div className="relative">
-            <Button variant="accent" size="md" onClick={() => setDonateOpen(true)}>
-              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              donate to STEAM
-            </Button>
-            {mode === "quest" && (
-              <span className="absolute -top-3 -left-2 bg-teal text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full rotate-6 animate-bounce-subtle pointer-events-none shadow-sm">
-                bonus entries!
-              </span>
-            )}
-          </div>
+          <Button
+            variant="accent"
+            size="md"
+            onClick={() => {
+              window.open(
+                "https://runsignup.com/Race/Donate/CA/Benicia/GreatBeniciaRun",
+                "_blank"
+              );
+            }}
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            donate to STEAM
+          </Button>
         </div>
       )}
 
-      {/* floating toggle */}
+      {/* floating 3-way toggle */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-[1000]">
-        <div className="bg-white/90 backdrop-blur-sm rounded-full shadow-lg p-1 flex relative" style={{ minWidth: 240 }}>
+        <div className="bg-white/90 backdrop-blur-sm rounded-full shadow-lg p-1 flex relative" style={{ minWidth: 300 }}>
           {/* sliding indicator */}
           <div
             className="absolute top-1 bottom-1 rounded-full bg-primary transition-all duration-200 ease-out"
             style={{
-              width: "calc(50% - 4px)",
-              left: mode === "race" ? "4px" : "calc(50%)",
+              width: "calc(33.333% - 4px)",
+              left:
+                mode === "race"
+                  ? "4px"
+                  : mode === "visitor"
+                  ? "calc(33.333% + 0px)"
+                  : "calc(66.666% - 2px)",
             }}
           />
-          <button
-            onClick={() => handleToggle("race")}
-            className={`relative z-10 flex-1 py-2.5 text-sm rounded-full transition-colors ${
-              mode === "race" ? "text-white font-medium" : "text-muted font-normal"
-            }`}
-          >
-            race info
-          </button>
-          <button
-            onClick={() => handleToggle("quest")}
-            className={`relative z-10 flex-1 py-2.5 text-sm rounded-full transition-colors ${
-              mode === "quest" ? "text-white font-medium" : "text-muted font-normal"
-            }`}
-          >
-            raffle quest
-          </button>
+          {(["race", "visitor", "quest"] as Mode[]).map((m) => (
+            <button
+              key={m}
+              onClick={() => handleToggle(m)}
+              className={`relative z-10 flex-1 py-2.5 text-xs rounded-full transition-colors ${
+                mode === m ? "text-white font-medium" : "text-muted font-normal"
+              }`}
+            >
+              {m === "race" ? "race info" : m === "visitor" ? "visitor info" : "STEAM quest"}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* quest intro modal */}
       {showQuestIntro && mode === "quest" && (
         <div className="absolute inset-0 z-[1100] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={dismissQuestIntro} />
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowQuestIntro(false)} />
           <div className="relative bg-white rounded-lg mx-4 p-6 max-w-sm shadow-2xl animate-slide-up">
             <div className="text-center mb-5">
               <h1 className="text-xl font-bold text-foreground">
-                STEAM wheel quest
+                STEAM quest
               </h1>
               <p className="text-sm text-muted mt-1">
-                a race-day scavenger hunt for a good cause
+                a scavenger hunt around first street
               </p>
             </div>
 
             <div className="space-y-4 text-sm text-foreground mb-6">
               <div className="flex gap-3 items-start">
                 <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
-                <p><strong>scan raffle checkpoints</strong> around the race course using QR codes</p>
+                <p><strong>find QR codes</strong> at 10 businesses along first street</p>
               </div>
               <div className="flex gap-3 items-start">
                 <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">2</span>
-                <p><strong>answer a STEAM question</strong> to earn raffle entries</p>
+                <p><strong>scan & answer</strong> a STEAM question at each stop</p>
               </div>
               <div className="flex gap-3 items-start">
                 <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">3</span>
-                <p><strong>collect entries</strong> for a chance to win prizes</p>
-              </div>
-              <div className="flex gap-3 items-start">
-                <span className="w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center text-xs font-bold shrink-0">+</span>
-                <p><strong>donate</strong> to unlock bonus entries and boost your rewards</p>
+                <p><strong>complete all 10</strong> and show at registration for a reward</p>
               </div>
             </div>
 
             <div className="bg-cream rounded-lg p-3 mb-5">
               <p className="text-xs text-foreground text-center leading-relaxed">
-                all donations support the <strong>STEAM Wheel</strong> program
+                all proceeds support the <strong>STEAM Wheel</strong> program
                 — hands-on STEAM learning for elementary students.
               </p>
             </div>
 
-            <Button variant="primary" size="xl" fullWidth onClick={dismissQuestIntro}>
+            <Button variant="primary" size="xl" fullWidth onClick={() => setShowQuestIntro(false)}>
               let&apos;s go
             </Button>
           </div>
@@ -244,9 +222,9 @@ export default function MainPage() {
       )}
 
       {/* race info overlay */}
-      {showRaceInfo && mode === "race" && (
+      {showIntro && mode === "race" && (
         <div className="absolute inset-0 z-[1100] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowRaceInfo(false)} />
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowIntro(false)} />
           <div className="relative bg-white rounded-lg mx-4 max-w-sm shadow-2xl animate-slide-up overflow-hidden">
             <div className="p-4 pb-0">
               <Image
@@ -281,21 +259,19 @@ export default function MainPage() {
 
               <div className="bg-cream rounded-lg p-3">
                 <p className="text-xs text-foreground text-center leading-relaxed">
-                  visiting or spectating? switch to <strong>raffle quest</strong> for
-                  a scavenger hunt around the course — scan raffle checkpoints, answer
+                  visiting or spectating? switch to <strong>STEAM quest</strong> for
+                  a scavenger hunt around first street — scan QR codes, answer
                   STEAM questions, and win prizes!
                 </p>
               </div>
 
-              <Button variant="primary" size="xl" fullWidth onClick={() => setShowRaceInfo(false)}>
+              <Button variant="primary" size="xl" fullWidth onClick={() => setShowIntro(false)}>
                 got it
               </Button>
             </div>
           </div>
         </div>
       )}
-
-      <DonateOverlay open={donateOpen} onClose={() => setDonateOpen(false)} />
     </>
   );
 }

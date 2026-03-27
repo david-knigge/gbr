@@ -4,16 +4,25 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
-import type { CheckpointProgress } from "@/lib/types";
 import { COURSES } from "@/lib/course-data";
-import type { MapPOI } from "@/lib/map-data";
-import { POI_ICONS } from "@/lib/map-data";
+import type { MapPOI, POIIconConfig } from "@/lib/map-data";
+import { POI_ICONS, RACE_LEGEND_TYPES, VISITOR_LEGEND_TYPES } from "@/lib/map-data";
+import { isCheckpointScanned } from "@/lib/quest-store";
 
 // Benicia First Street Green area
 const RACE_CENTER: [number, number] = [38.0494, -122.1586];
 const DEFAULT_ZOOM = 15;
 
-const checkpointIcon = (completed: boolean) => {
+interface CheckpointMarker {
+  id: string;
+  name: string;
+  position: [number, number];
+  is_completed: boolean;
+  sort_order: number | null;
+}
+
+// Numbered checkpoint marker (0–9)
+const checkpointIcon = (completed: boolean, index: number) => {
   const bg = completed ? "#22c55e" : "#7B5EA7";
   return L.divIcon({
     className: "",
@@ -23,8 +32,9 @@ const checkpointIcon = (completed: boolean) => {
       border: 3px solid white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       display: flex; align-items: center; justify-content: center;
-      font-size: 16px; line-height: 1;
-    ">${completed ? "✓" : "🏃"}</div>`,
+      color: white; font-weight: 700; font-size: 14px;
+      font-family: system-ui, sans-serif;
+    ">${completed ? '<i class="ph-bold ph-check" style="font-size:16px"></i>' : index}</div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 16],
   });
@@ -43,32 +53,29 @@ const userIcon = L.divIcon({
 });
 
 function poiIcon(type: string) {
-  const config = POI_ICONS[type] || { emoji: "?", color: "#999" };
+  const config: POIIconConfig = POI_ICONS[type] || POI_ICONS.other;
   return L.divIcon({
     className: "",
     html: `<div style="
-      width: 28px; height: 28px; border-radius: 6px;
+      width: 30px; height: 30px; border-radius: 8px;
       background: ${config.color};
       border: 2px solid white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       display: flex; align-items: center; justify-content: center;
-      color: white; font-weight: bold; font-size: 13px;
-    ">${config.emoji}</div>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 14],
+    "><i class="ph-bold ph-${config.icon}" style="color:white;font-size:15px;"></i></div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
   });
 }
 
-function getCheckpointPositions(checkpoints: CheckpointProgress[]): [number, number][] {
-  if (checkpoints.length === 0) return [];
-  const fiveK = COURSES.find((c) => c.name === "5k");
-  const step = fiveK ? Math.floor(fiveK.points.length / (checkpoints.length + 1)) : 0;
-  return checkpoints.map((cp, i) => {
-    if (cp.position_lat && cp.position_lng) {
-      return [cp.position_lat, cp.position_lng];
-    }
-    return fiveK ? (fiveK.points[(i + 1) * step] || RACE_CENTER) : RACE_CENTER;
-  });
+// Structured popup — title with teal dot, description left-aligned
+function PopupContent({ title, desc }: { title: string; desc?: string }) {
+  return (
+    <>
+      <strong>{title.toLowerCase()}</strong>
+      {desc && <span className="popup-desc" dangerouslySetInnerHTML={{ __html: desc }} />}
+    </>
+  );
 }
 
 function LocationTracker({ onLocationFound, onDenied }: { onLocationFound: (pos: [number, number]) => void; onDenied: () => void }) {
@@ -101,20 +108,18 @@ function LocationTracker({ onLocationFound, onDenied }: { onLocationFound: (pos:
 }
 
 interface RaceMapProps {
-  checkpoints?: CheckpointProgress[];
-  pois?: MapPOI[];
   showCourses?: boolean;
   ghostCourses?: boolean;
   showPOIs?: boolean;
+  poiCategory?: "race" | "visitor";
   showCheckpoints?: boolean;
 }
 
 export function RaceMap({
-  checkpoints = [],
-  pois,
   showCourses = true,
   ghostCourses = false,
   showPOIs = true,
+  poiCategory = "race",
   showCheckpoints = false,
 }: RaceMapProps) {
   const [userPosition, setUserPosition] = useState<[number, number] | null>(null);
@@ -124,20 +129,35 @@ export function RaceMap({
   const [legendOpen, setLegendOpen] = useState(false);
   const [poisVisible, setPoisVisible] = useState(true);
   const [loadedPois, setLoadedPois] = useState<MapPOI[]>([]);
+  const [checkpoints, setCheckpoints] = useState<CheckpointMarker[]>([]);
   const [locationDenied, setLocationDenied] = useState(false);
 
-  const positions = getCheckpointPositions(checkpoints);
-
+  // Load POIs
   useEffect(() => {
-    if (pois) {
-      setLoadedPois(pois);
-      return;
-    }
     fetch("/api/pois")
       .then((r) => (r.ok ? r.json() : []))
       .then(setLoadedPois)
       .catch(() => {});
-  }, [pois]);
+  }, []);
+
+  // Load checkpoints for quest mode
+  useEffect(() => {
+    if (!showCheckpoints) return;
+    fetch("/api/checkpoints")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((cps: { id: string; name: string; sort_order: number | null; position_lat: number; position_lng: number }[]) => {
+        setCheckpoints(
+          cps.map((cp) => ({
+            id: cp.id,
+            name: cp.name,
+            sort_order: cp.sort_order,
+            position: [cp.position_lat, cp.position_lng] as [number, number],
+            is_completed: isCheckpointScanned(cp.id),
+          }))
+        );
+      })
+      .catch(() => {});
+  }, [showCheckpoints]);
 
   const handleLocationFound = useCallback((pos: [number, number]) => {
     setUserPosition(pos);
@@ -152,6 +172,15 @@ export function RaceMap({
     });
   };
 
+  // Filter POIs by category
+  const filteredPois = loadedPois.filter((poi) => {
+    const cat = (poi as MapPOI & { category?: string }).category || "race";
+    if (poiCategory === "visitor") return cat === "visitor" || cat === "both";
+    return cat === "race" || cat === "both";
+  });
+
+  const legendTypes = poiCategory === "visitor" ? VISITOR_LEGEND_TYPES : RACE_LEGEND_TYPES;
+
   return (
     <>
       <MapContainer
@@ -161,7 +190,7 @@ export function RaceMap({
         zoomControl={false}
         attributionControl={false}
       >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
         <LocationTracker onLocationFound={handleLocationFound} onDenied={() => setLocationDenied(true)} />
 
         {userPosition && (
@@ -172,12 +201,12 @@ export function RaceMap({
               pathOptions={{ color: "#E8643B", fillColor: "#E8643B", fillOpacity: 0.1, weight: 1 }}
             />
             <Marker position={userPosition} icon={userIcon}>
-              <Popup>you are here</Popup>
+              <Popup><PopupContent title="you are here" /></Popup>
             </Marker>
           </>
         )}
 
-        {/* ghost courses — thin, light, non-interactive */}
+        {/* ghost courses — thin, dashed, non-interactive */}
         {ghostCourses &&
           COURSES.map((course) => (
             <Polyline
@@ -208,21 +237,15 @@ export function RaceMap({
                 lineJoin: "round",
               }}
             >
-              <Popup>
-                <strong>{course.name}</strong>
-                start: {course.startTime}
-              </Popup>
+              <Popup><PopupContent title={course.name} desc={`start: ${course.startTime}`} /></Popup>
             </Polyline>
           ))}
 
         {showPOIs &&
           poisVisible &&
-          loadedPois.map((poi) => (
+          filteredPois.map((poi) => (
             <Marker key={`${poi.name}-${poi.position[0]}`} position={poi.position} icon={poiIcon(poi.type)}>
-              <Popup>
-                <strong>{poi.name.toLowerCase()}</strong>
-                {poi.description}
-              </Popup>
+              <Popup><PopupContent title={poi.name} desc={poi.description} /></Popup>
             </Marker>
           ))}
 
@@ -230,53 +253,55 @@ export function RaceMap({
           checkpoints.map((cp, i) => (
             <Marker
               key={cp.id}
-              position={positions[i] || RACE_CENTER}
-              icon={checkpointIcon(cp.is_completed)}
+              position={cp.position}
+              icon={checkpointIcon(cp.is_completed, cp.sort_order != null ? cp.sort_order : i)}
             >
               <Popup>
-                <strong>{cp.name.toLowerCase()}</strong>
-                {cp.is_completed ? (
-                  <span style={{ color: "#22c55e", fontWeight: 700 }}>completed</span>
-                ) : (
-                  <span style={{ color: "#7B5EA7", fontWeight: 700 }}>not yet scanned</span>
-                )}
+                <PopupContent
+                  title={`#${cp.sort_order != null ? cp.sort_order : i} ${cp.name}`}
+                  desc={cp.is_completed
+                    ? '<span style="color:#22c55e;font-weight:600">completed</span>'
+                    : '<span style="color:#7B5EA7;font-weight:600">not yet scanned</span>'}
+                />
               </Popup>
             </Marker>
           ))}
       </MapContainer>
 
-      {/* legend — top right, below any HUD */}
-      {showCourses && (
+      {/* legend — top right */}
+      {(showCourses || showPOIs) && (
         <div className="absolute top-3 right-3 z-[1000]">
           <button
             onClick={() => setLegendOpen(!legendOpen)}
             className="bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg text-xs font-medium text-foreground flex items-center gap-1.5"
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
+            <i className="ph-bold ph-list text-sm" />
             legend
           </button>
           {legendOpen && (
             <div className="mt-1.5 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3.5 space-y-2 min-w-[180px]">
-              <div className="text-[10px] font-medium text-muted">courses</div>
-              {COURSES.map((course) => (
-                <label key={course.name} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={visibleCourses.has(course.name)}
-                    onChange={() => toggleCourse(course.name)}
-                    className="rounded accent-teal w-3.5 h-3.5"
-                  />
-                  <span
-                    className="w-2.5 h-2.5 rounded-sm"
-                    style={{ background: course.color }}
-                  />
-                  <span className="text-xs font-medium text-foreground">{course.name}</span>
-                  <span className="text-[10px] text-muted ml-auto">{course.startTime}</span>
-                </label>
-              ))}
-              <hr className="border-card-border" />
+              {showCourses && (
+                <>
+                  <div className="text-[10px] font-medium text-muted uppercase tracking-wide">courses</div>
+                  {COURSES.map((course) => (
+                    <label key={course.name} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={visibleCourses.has(course.name)}
+                        onChange={() => toggleCourse(course.name)}
+                        className="rounded accent-teal w-3.5 h-3.5"
+                      />
+                      <span
+                        className="w-2.5 h-2.5 rounded-sm"
+                        style={{ background: course.color }}
+                      />
+                      <span className="text-xs font-medium text-foreground">{course.name}</span>
+                      <span className="text-[10px] text-muted ml-auto">{course.startTime}</span>
+                    </label>
+                  ))}
+                  <hr className="border-card-border" />
+                </>
+              )}
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -284,34 +309,25 @@ export function RaceMap({
                   onChange={() => setPoisVisible(!poisVisible)}
                   className="rounded accent-teal w-3.5 h-3.5"
                 />
-                <span className="text-xs font-medium text-foreground">info points</span>
+                <span className="text-xs font-medium text-foreground">points of interest</span>
               </label>
               {poisVisible && (
-                <div className="text-[11px] text-muted space-y-1 pl-0.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">🅿</span>
-                    <span>parking</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">📋</span>
-                    <span>registration</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">🏁</span>
-                    <span>start / finish</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">💧</span>
-                    <span>aid station</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">🚾</span>
-                    <span>restrooms</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 flex items-center justify-center text-[11px]">🌭</span>
-                    <span>stands</span>
-                  </div>
+                <div className="text-[11px] text-muted space-y-1.5 pl-0.5">
+                  {legendTypes.map((key) => {
+                    const icon = POI_ICONS[key];
+                    if (!icon) return null;
+                    return (
+                      <div key={key} className="flex items-center gap-2">
+                        <span
+                          className="w-5 h-5 rounded flex items-center justify-center shrink-0"
+                          style={{ background: icon.color }}
+                        >
+                          <i className={`ph-bold ph-${icon.icon}`} style={{ color: "white", fontSize: 11 }} />
+                        </span>
+                        <span>{icon.label}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

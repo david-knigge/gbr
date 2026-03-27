@@ -15,15 +15,29 @@ const POI_TYPES = [
   "finish",
   "aid",
   "restroom",
+  "restaurant",
+  "cafe",
+  "bar",
+  "bakery",
+  "retail",
+  "gallery",
+  "service",
+  "historic",
+  "park",
+  "viewpoint",
+  "marina",
   "stand",
   "info",
   "other",
 ];
 
+const POI_CATEGORIES = ["race", "visitor", "both"] as const;
+
 interface POI {
   id: string;
   name: string;
   type: string;
+  category: string;
   position_lat: number;
   position_lng: number;
   description: string;
@@ -34,6 +48,7 @@ interface POI {
 const emptyForm = {
   name: "",
   type: "other",
+  category: "race",
   position_lat: "",
   position_lng: "",
   description: "",
@@ -71,6 +86,7 @@ export default function POIsAdminPage() {
     setForm({
       name: poi.name,
       type: poi.type,
+      category: poi.category || "race",
       position_lat: String(poi.position_lat),
       position_lng: String(poi.position_lng),
       description: poi.description,
@@ -92,6 +108,7 @@ export default function POIsAdminPage() {
     const payload = {
       name: form.name,
       type: form.type,
+      category: form.category,
       position_lat: parseFloat(form.position_lat),
       position_lng: parseFloat(form.position_lng),
       description: form.description,
@@ -202,6 +219,22 @@ export default function POIsAdminPage() {
                 ))}
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category (tab)
+              </label>
+              <select
+                className="w-full border rounded px-3 py-2 text-sm"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              >
+                {POI_CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Description
@@ -257,6 +290,7 @@ export default function POIsAdminPage() {
             <tr>
               <th className="p-3">Name</th>
               <th className="p-3">Type</th>
+              <th className="p-3">Tab</th>
               <th className="p-3">Position</th>
               <th className="p-3">Description</th>
               <th className="p-3">Active</th>
@@ -271,6 +305,11 @@ export default function POIsAdminPage() {
                 <td className="p-3">
                   <span className="px-2 py-0.5 rounded text-xs bg-gray-100 font-medium">
                     {p.type}
+                  </span>
+                </td>
+                <td className="p-3">
+                  <span className="px-2 py-0.5 rounded text-xs bg-blue-50 font-medium text-blue-700">
+                    {p.category || "race"}
                   </span>
                 </td>
                 <td className="p-3 font-mono text-xs">

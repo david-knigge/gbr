@@ -3,8 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRScanner } from "@/components/qr-scanner";
-import { apiFetch } from "@/lib/api-client";
-import type { ScanResponse } from "@/lib/types";
+import { isCheckpointScanned, markCheckpointScanned } from "@/lib/quest-store";
+
+interface ScanResult {
+  checkpoint: { id: string; name: string; slug: string; description: string };
+  question: {
+    id: string;
+    prompt: string;
+    answer_a: string;
+    answer_b: string;
+    answer_c: string;
+    answer_d: string | null;
+    correct_answer: string;
+    explanation: string;
+  } | null;
+}
 
 export default function ScanPage() {
   const router = useRouter();
@@ -16,38 +29,47 @@ export default function ScanPage() {
     setError(null);
 
     try {
-      const result = await apiFetch<ScanResponse>("/api/scan", {
+      const res = await fetch("/api/scan", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ qr_token: token }),
       });
 
-      if (result.already_scanned && !result.question) {
-        setError("you've already completed this checkpoint!");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "scan failed");
+      }
+
+      const result: ScanResult = await res.json();
+
+      // Check if already scanned locally
+      if (isCheckpointScanned(result.checkpoint.id)) {
+        setError("you've already scanned this checkpoint!");
         setLoading(false);
         return;
       }
 
-      const params = new URLSearchParams({
-        checkpoint_id: result.checkpoint.id,
-        checkpoint_name: result.checkpoint.name,
-        entries_awarded: String(result.entries_awarded),
-        already_scanned: String(result.already_scanned),
-        new_total: String(result.new_total),
-        ...(result.milestone_earned ? { milestone: String(result.milestone_earned) } : {}),
-      });
+      // Mark scanned in localStorage
+      markCheckpointScanned(result.checkpoint.id, result.checkpoint.name);
 
       if (result.question) {
-        params.set("question_id", result.question.id);
-        params.set("prompt", result.question.prompt);
-        params.set("answer_a", result.question.answer_a);
-        params.set("answer_b", result.question.answer_b);
-        params.set("answer_c", result.question.answer_c);
-        if (result.question.answer_d) {
-          params.set("answer_d", result.question.answer_d);
-        }
+        const params = new URLSearchParams({
+          checkpoint_id: result.checkpoint.id,
+          checkpoint_name: result.checkpoint.name,
+          question_id: result.question.id,
+          prompt: result.question.prompt,
+          answer_a: result.question.answer_a,
+          answer_b: result.question.answer_b,
+          answer_c: result.question.answer_c,
+          correct_answer: result.question.correct_answer,
+          explanation: result.question.explanation,
+          ...(result.question.answer_d ? { answer_d: result.question.answer_d } : {}),
+        });
+        router.push(`/quest/question?${params.toString()}`);
+      } else {
+        // No question — just go back to map
+        router.push("/");
       }
-
-      router.push(`/quest/question?${params.toString()}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "scan failed");
       setLoading(false);

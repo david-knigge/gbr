@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { initUser } from "@/lib/identity";
-import { apiFetch } from "@/lib/api-client";
-import type { ScanResponse } from "@/lib/types";
+import { isCheckpointScanned, markCheckpointScanned } from "@/lib/quest-store";
 
 export default function DirectScanPage() {
   const router = useRouter();
@@ -15,44 +13,47 @@ export default function DirectScanPage() {
   useEffect(() => {
     async function processScan() {
       try {
-        // Ensure user exists
-        await initUser();
-
-        // Process the scan
-        const result = await apiFetch<ScanResponse>("/api/scan", {
+        const res = await fetch("/api/scan", {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ qr_token: token }),
         });
 
-        if (result.already_scanned && !result.question) {
-          router.replace("/quest");
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || "checkpoint not found");
+        }
+
+        const result = await res.json();
+
+        // Check if already scanned locally
+        if (isCheckpointScanned(result.checkpoint.id)) {
+          router.replace("/");
           return;
         }
 
-        // Build query params for question page
-        const searchParams = new URLSearchParams({
-          checkpoint_id: result.checkpoint.id,
-          checkpoint_name: result.checkpoint.name,
-          entries_awarded: String(result.entries_awarded),
-          already_scanned: String(result.already_scanned),
-          new_total: String(result.new_total),
-          ...(result.milestone_earned ? { milestone: String(result.milestone_earned) } : {}),
-        });
+        // Mark scanned
+        markCheckpointScanned(result.checkpoint.id, result.checkpoint.name);
 
         if (result.question) {
-          searchParams.set("question_id", result.question.id);
-          searchParams.set("prompt", result.question.prompt);
-          searchParams.set("answer_a", result.question.answer_a);
-          searchParams.set("answer_b", result.question.answer_b);
-          searchParams.set("answer_c", result.question.answer_c);
-          if (result.question.answer_d) {
-            searchParams.set("answer_d", result.question.answer_d);
-          }
+          const searchParams = new URLSearchParams({
+            checkpoint_id: result.checkpoint.id,
+            checkpoint_name: result.checkpoint.name,
+            question_id: result.question.id,
+            prompt: result.question.prompt,
+            answer_a: result.question.answer_a,
+            answer_b: result.question.answer_b,
+            answer_c: result.question.answer_c,
+            correct_answer: result.question.correct_answer,
+            explanation: result.question.explanation,
+            ...(result.question.answer_d ? { answer_d: result.question.answer_d } : {}),
+          });
+          router.replace(`/quest/question?${searchParams.toString()}`);
+        } else {
+          router.replace("/");
         }
-
-        router.replace(`/quest/question?${searchParams.toString()}`);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to process checkpoint");
+        setError(e instanceof Error ? e.message : "failed to process checkpoint");
       }
     }
 
@@ -67,7 +68,7 @@ export default function DirectScanPage() {
           onClick={() => router.push("/")}
           className="text-primary underline text-sm"
         >
-          Go to Home
+          go to home
         </button>
       </div>
     );
@@ -75,7 +76,7 @@ export default function DirectScanPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-pulse text-muted text-lg">Processing checkpoint...</div>
+      <div className="animate-pulse text-muted text-lg">processing checkpoint...</div>
     </div>
   );
 }

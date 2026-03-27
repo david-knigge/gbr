@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@phosphor-icons/web/bold";
 
 @theme inline {
   --color-primary: #7B5EA7;
@@ -35,65 +36,81 @@ body {
   z-index: 0;
 }
 
-/* leaflet popups — compact, matching the app overlays */
+/* ── leaflet popups — clean card, no speech bubble ── */
 .leaflet-popup-content-wrapper {
   all: unset !important;
   display: block !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  border-radius: 0.5rem !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  background: white !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
   font-family: var(--font-sans) !important;
   color: var(--color-foreground) !important;
+  overflow: hidden !important;
 }
 
 .leaflet-popup-content {
   all: unset !important;
   display: block !important;
-  padding: 8px 12px !important;
+  padding: 10px 14px !important;
   font-size: 11px !important;
-  line-height: 1.4 !important;
+  line-height: 1.5 !important;
   font-weight: 400 !important;
   color: var(--color-muted) !important;
-  white-space: nowrap !important;
+  min-width: 120px !important;
 }
 
+/* title: bold, foreground, dot before it */
 .leaflet-popup-content strong {
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   font-size: 12px !important;
   color: var(--color-foreground) !important;
   display: block !important;
-  margin-bottom: 1px !important;
+  margin-bottom: 2px !important;
 }
 
-.leaflet-popup-tip-container {
-  width: 20px !important;
-  height: 10px !important;
-  margin-left: -10px !important;
+.leaflet-popup-content strong::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background: var(--color-teal) !important;
+  margin-right: 6px !important;
+  vertical-align: middle !important;
+  position: relative !important;
+  top: -1px !important;
 }
 
-.leaflet-popup-tip {
-  all: unset !important;
+/* description lines */
+.leaflet-popup-content .popup-desc {
   display: block !important;
-  width: 12px !important;
-  height: 12px !important;
-  margin: -6px auto 0 !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
-  transform: rotate(45deg) !important;
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+  color: var(--color-muted) !important;
+  padding-left: 11px !important;
 }
 
+/* hide the pointer triangle */
+.leaflet-popup-tip-container {
+  display: none !important;
+}
+
+/* close button */
 .leaflet-popup-close-button {
   all: unset !important;
   position: absolute !important;
-  top: 4px !important;
-  right: 6px !important;
+  top: 6px !important;
+  right: 8px !important;
   cursor: pointer !important;
-  font-size: 12px !important;
+  font-size: 14px !important;
   font-weight: 300 !important;
   color: var(--color-card-border) !important;
   line-height: 1 !important;
+  width: 16px !important;
+  height: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .leaflet-popup-close-button:hover {
