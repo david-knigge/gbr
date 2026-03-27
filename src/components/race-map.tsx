@@ -85,11 +85,7 @@ function PopupContent({ title, details }: { title: string; details?: PopupDetail
     <>
       <span className="popup-title">{title.toLowerCase()}</span>
       {details?.map((d, i) => (
-        <span
-          key={i}
-          className={`popup-row${d.icon === "status" ? " popup-status" : ""}`}
-          {...(d.icon === "status" ? {} : {})}
-        >
+        <span key={i} className={`popup-row${d.icon === "status" ? " popup-status" : ""}`}>
           {d.icon && <i className={iconClass[d.icon] || iconClass.info} />}
           <span dangerouslySetInnerHTML={{ __html: d.text }} />
         </span>
@@ -98,18 +94,20 @@ function PopupContent({ title, details }: { title: string; details?: PopupDetail
   );
 }
 
-// Split POI description into typed detail rows on separate lines
-// e.g. "First Street Green — opens 7:00 AM" → [{pin, "first street green"}, {clock, "opens 7:00 am"}]
-function parsePoiDetails(desc?: string): PopupDetail[] | undefined {
-  if (!desc) return undefined;
-  const parts = desc.split(" — ").map((s) => s.trim()).filter(Boolean);
-  if (parts.length === 0) return undefined;
-
-  const timePattern = /\b\d{1,2}:\d{2}\s*(am|pm|AM|PM)\b/;
-  return parts.map((part) => ({
-    text: part,
-    icon: timePattern.test(part) ? "clock" as const : "pin" as const,
-  }));
+// Build detail rows from structured POI fields
+function poiDetails(poi: MapPOI): PopupDetail[] {
+  const rows: PopupDetail[] = [];
+  if (poi.location) {
+    const q = encodeURIComponent(`${poi.location}, Benicia CA`);
+    rows.push({ text: `<a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener" style="color:#4DBFB3;text-decoration:none">${poi.location}</a>`, icon: "pin" });
+  }
+  if (poi.hours) {
+    rows.push({ text: poi.hours, icon: "clock" });
+  }
+  if (poi.description) {
+    rows.push({ text: poi.description, icon: "info" });
+  }
+  return rows;
 }
 
 
@@ -280,7 +278,7 @@ export function RaceMap({
           poisVisible &&
           filteredPois.map((poi) => (
             <Marker key={`${poi.name}-${poi.position[0]}`} position={poi.position} icon={poiIcon(poi.type)}>
-              <Popup><PopupContent title={poi.name} details={parsePoiDetails(poi.description)} /></Popup>
+              <Popup><PopupContent title={poi.name} details={poiDetails(poi)} /></Popup>
             </Marker>
           ))}
 

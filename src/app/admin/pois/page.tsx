@@ -40,7 +40,9 @@ interface POI {
   category: string;
   position_lat: number;
   position_lng: number;
-  description: string;
+  location: string;
+  hours: string | null;
+  description: string | null;
   is_active: boolean;
   sort_order: number;
 }
@@ -51,6 +53,8 @@ const emptyForm = {
   category: "race",
   position_lat: "",
   position_lng: "",
+  location: "",
+  hours: "",
   description: "",
   sort_order: "0",
 };
@@ -89,7 +93,9 @@ export default function POIsAdminPage() {
       category: poi.category || "race",
       position_lat: String(poi.position_lat),
       position_lng: String(poi.position_lng),
-      description: poi.description,
+      location: poi.location || "",
+      hours: poi.hours || "",
+      description: poi.description || "",
       sort_order: String(poi.sort_order),
     });
   }
@@ -111,7 +117,9 @@ export default function POIsAdminPage() {
       category: form.category,
       position_lat: parseFloat(form.position_lat),
       position_lng: parseFloat(form.position_lng),
-      description: form.description,
+      location: form.location,
+      hours: form.hours || null,
+      description: form.description || null,
       sort_order: parseInt(form.sort_order) || 0,
       is_active: true,
     };
@@ -200,7 +208,7 @@ export default function POIsAdminPage() {
                 className="w-full border rounded px-3 py-2 text-sm"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="e.g. Hot Dog Stand"
+                placeholder="e.g. Joe's Coffee"
               />
             </div>
             <div>
@@ -235,19 +243,6 @@ export default function POIsAdminPage() {
                 ))}
               </select>
             </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <input
-                className="w-full border rounded px-3 py-2 text-sm"
-                value={form.description}
-                onChange={(e) =>
-                  setForm({ ...form, description: e.target.value })
-                }
-                placeholder="Short description"
-              />
-            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Sort Order
@@ -262,10 +257,50 @@ export default function POIsAdminPage() {
               />
             </div>
           </div>
+
+          <hr className="border-gray-200" />
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Popup details</p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                📍 Location <span className="text-gray-400 font-normal">(shown in popup, links to Maps)</span>
+              </label>
+              <input
+                className="w-full border rounded px-3 py-2 text-sm"
+                value={form.location}
+                onChange={(e) => setForm({ ...form, location: e.target.value })}
+                placeholder="e.g. 123 First Street"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                🕐 Hours / time <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <input
+                className="w-full border rounded px-3 py-2 text-sm"
+                value={form.hours}
+                onChange={(e) => setForm({ ...form, hours: e.target.value })}
+                placeholder="e.g. opens 7:00 AM"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                📝 Description <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <input
+                className="w-full border rounded px-3 py-2 text-sm"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder="e.g. great coffee & pastries"
+              />
+            </div>
+          </div>
+
           <div className="flex gap-2">
             <button
               onClick={handleSave}
-              disabled={saving || !form.name || !form.position_lat || !form.position_lng}
+              disabled={saving || !form.name || !form.position_lat || !form.position_lng || !form.location}
               className="px-4 py-2 text-sm text-white rounded disabled:opacity-50"
               style={{ backgroundColor: "#4DBFB3" }}
             >
@@ -291,10 +326,9 @@ export default function POIsAdminPage() {
               <th className="p-3">Name</th>
               <th className="p-3">Type</th>
               <th className="p-3">Tab</th>
-              <th className="p-3">Position</th>
-              <th className="p-3">Description</th>
+              <th className="p-3">Location</th>
+              <th className="p-3">Hours</th>
               <th className="p-3">Active</th>
-              <th className="p-3">Order</th>
               <th className="p-3"></th>
             </tr>
           </thead>
@@ -312,11 +346,11 @@ export default function POIsAdminPage() {
                     {p.category || "race"}
                   </span>
                 </td>
-                <td className="p-3 font-mono text-xs">
-                  {p.position_lat.toFixed(4)}, {p.position_lng.toFixed(4)}
-                </td>
                 <td className="p-3 text-gray-600 truncate max-w-48">
-                  {p.description}
+                  {p.location || <span className="text-gray-300">—</span>}
+                </td>
+                <td className="p-3 text-gray-500 text-xs">
+                  {p.hours || <span className="text-gray-300">—</span>}
                 </td>
                 <td className="p-3">
                   <button
@@ -326,7 +360,6 @@ export default function POIsAdminPage() {
                     {p.is_active ? "Yes" : "No"}
                   </button>
                 </td>
-                <td className="p-3">{p.sort_order}</td>
                 <td className="p-3 space-x-2">
                   <button
                     onClick={() => startEdit(p)}

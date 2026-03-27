@@ -15,7 +15,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const supabase = getSupabaseAdmin();
   const body = await req.json();
-  const { name, type, category, position_lat, position_lng, description, sort_order } = body;
+  const { name, type, category, position_lat, position_lng, location, hours, description, sort_order } = body;
 
   if (!name || !type || position_lat == null || position_lng == null) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -29,7 +29,9 @@ export async function POST(req: NextRequest) {
       category: category || "race",
       position_lat,
       position_lng,
-      description: description || "",
+      location: location || "",
+      hours: hours || null,
+      description: description || null,
       sort_order: sort_order ?? 0,
     })
     .select()
