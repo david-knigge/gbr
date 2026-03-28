@@ -194,7 +194,7 @@ FROM (
       WHEN 3  THEN 'Fox & Fawn Bakehouse'
       WHEN 4  THEN 'Lucca Bar & Grill'
       WHEN 5  THEN 'Bookshop Benicia'
-      WHEN 6  THEN 'States Coffee'
+      WHEN 6  THEN 'Majestic Cafe'
       WHEN 7  THEN 'The Rellik Tavern'
       WHEN 8  THEN 'One House Bakery'
       WHEN 9  THEN 'Benicia Capitol'
@@ -206,7 +206,7 @@ FROM (
       WHEN 3  THEN 'fox-fawn-bakehouse'
       WHEN 4  THEN 'lucca-bar'
       WHEN 5  THEN 'bookshop-benicia'
-      WHEN 6  THEN 'states-coffee'
+      WHEN 6  THEN 'majestic-cafe'
       WHEN 7  THEN 'rellik-tavern'
       WHEN 8  THEN 'one-house-bakery'
       WHEN 9  THEN 'benicia-capitol'
@@ -282,7 +282,8 @@ INSERT INTO pois (name, type, category, position_lat, position_lng, location, ho
 -- Seed: POIs — Cafes & Bakeries (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('States Coffee & Bread', 'cafe',   'visitor', 38.0496, -122.1553, '700 first street',  NULL, 'specialty coffee & fresh bread', 30),
+('Majestic Cafe',         'cafe',   'visitor', 38.0496, -122.1553, '700 first street',  NULL, 'specialty coffee & cafe', 30),
+('Rainbow Ice Cream',     'cafe',   'visitor', 38.0495, -122.1555, '701 first street',  NULL, 'ice cream & frozen treats', 33),
 ('Fox & Fawn Bakehouse',  'bakery', 'visitor', 38.0487, -122.1584, '305 first street',  NULL, 'vegan bakery & pastries', 31),
 ('One House Bakery',      'bakery', 'visitor', 38.0499, -122.1532, '918 first street',  NULL, 'artisan bakery & coffee', 32);
 
