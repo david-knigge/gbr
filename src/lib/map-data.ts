@@ -103,3 +103,10 @@ export const POI_ICONS: Record<string, POIIconConfig> = {
 
 export const RACE_LEGEND_TYPES = ["registration", "start", "aid", "restroom", "parking"];
 export const VISITOR_LEGEND_TYPES = ["parking", "restaurant", "cafe", "bar", "retail", "gallery", "historic", "park", "viewpoint", "marina", "restroom"];
+
+// Grouped legend categories for toggle controls
+export const POI_GROUPS = [
+  { key: "utilities", label: "utilities", types: ["registration", "start", "finish", "aid", "restroom", "parking"], defaultOn: true },
+  { key: "sights",    label: "sights",    types: ["historic", "park", "viewpoint", "marina"],                       defaultOn: true },
+  { key: "dining",    label: "food & shops", types: ["restaurant", "cafe", "bar", "bakery", "retail", "gallery", "service"], defaultOn: false },
+];

@@ -6,7 +6,7 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from
 import L from "leaflet";
 import { COURSES } from "@/lib/course-data";
 import type { MapPOI, POIIconConfig } from "@/lib/map-data";
-import { POI_ICONS, RACE_LEGEND_TYPES, VISITOR_LEGEND_TYPES } from "@/lib/map-data";
+import { POI_ICONS, POI_GROUPS } from "@/lib/map-data";
 import { isCheckpointScanned } from "@/lib/quest-store";
 
 // Benicia First Street Green area
@@ -166,8 +166,10 @@ export function RaceMap({
   const [visibleCourses, setVisibleCourses] = useState<Set<string>>(
     new Set(COURSES.map((c) => c.name))
   );
-  const [legendOpen, setLegendOpen] = useState(false);
-  const [poisVisible, setPoisVisible] = useState(true);
+  const [legendOpen, setLegendOpen] = useState(true);
+  const [visibleGroups, setVisibleGroups] = useState<Set<string>>(
+    () => new Set(POI_GROUPS.filter((g) => g.defaultOn).map((g) => g.key))
+  );
   const [loadedPois, setLoadedPois] = useState<MapPOI[]>([]);
   const [checkpoints, setCheckpoints] = useState<CheckpointMarker[]>([]);
   const [locationDenied, setLocationDenied] = useState(false);
@@ -212,14 +214,37 @@ export function RaceMap({
     });
   };
 
-  // Filter POIs by category
+  // Build set of visible POI types from toggled groups
+  const visiblePoiTypes = new Set(
+    POI_GROUPS.filter((g) => visibleGroups.has(g.key)).flatMap((g) => g.types)
+  );
+
+  // Filter POIs by category + visible groups
   const filteredPois = loadedPois.filter((poi) => {
     const cat = (poi as MapPOI & { category?: string }).category || "race";
-    if (poiCategory === "visitor") return cat === "visitor" || cat === "both";
-    return cat === "race" || cat === "both";
+    const catMatch = poiCategory === "visitor" ? cat === "visitor" || cat === "both" : cat === "race" || cat === "both";
+    return catMatch && visiblePoiTypes.has(poi.type);
   });
 
-  const legendTypes = poiCategory === "visitor" ? VISITOR_LEGEND_TYPES : RACE_LEGEND_TYPES;
+  const toggleGroup = (key: string) => {
+    setVisibleGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  // Which groups have relevant POIs for the current tab?
+  const activeGroups = POI_GROUPS.filter((g) =>
+    g.types.some((t) =>
+      loadedPois.some((poi) => {
+        const cat = (poi as MapPOI & { category?: string }).category || "race";
+        const catMatch = poiCategory === "visitor" ? cat === "visitor" || cat === "both" : cat === "race" || cat === "both";
+        return catMatch && poi.type === t;
+      })
+    )
+  );
 
   return (
     <>
@@ -282,7 +307,6 @@ export function RaceMap({
           ))}
 
         {showPOIs &&
-          poisVisible &&
           filteredPois.map((poi) => (
             <Marker key={`${poi.name}-${poi.position[0]}`} position={poi.position} icon={poiIcon(poi.type)}>
               <Popup><PopupContent title={poi.name} details={poiDetails(poi)} /></Popup>
@@ -345,34 +369,45 @@ export function RaceMap({
                   <hr className="border-card-border" />
                 </>
               )}
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={poisVisible}
-                  onChange={() => setPoisVisible(!poisVisible)}
-                  className="rounded accent-teal w-3.5 h-3.5"
-                />
-                <span className="text-xs font-medium text-foreground">points of interest</span>
-              </label>
-              {poisVisible && (
-                <div className="text-[11px] text-muted space-y-1.5 pl-0.5">
-                  {legendTypes.map((key) => {
-                    const icon = POI_ICONS[key];
-                    if (!icon) return null;
-                    return (
-                      <div key={key} className="flex items-center gap-2">
-                        <span
-                          className="w-5 h-5 rounded flex items-center justify-center shrink-0"
-                          style={{ background: icon.color }}
-                        >
-                          <i className={`ph-bold ph-${icon.icon}`} style={{ color: "white", fontSize: 11 }} />
-                        </span>
-                        <span>{icon.label}</span>
-                      </div>
-                    );
-                  })}
+              {activeGroups.map((group) => (
+                <div key={group.key}>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={visibleGroups.has(group.key)}
+                      onChange={() => toggleGroup(group.key)}
+                      className="rounded accent-teal w-3.5 h-3.5"
+                    />
+                    <span className="text-xs font-medium text-foreground">{group.label}</span>
+                  </label>
+                  {visibleGroups.has(group.key) && (
+                    <div className="text-[11px] text-muted space-y-1.5 pl-5.5 mt-1.5">
+                      {group.types.map((key) => {
+                        const icon = POI_ICONS[key];
+                        if (!icon) return null;
+                        // Only show types that have POIs in the current tab
+                        const hasPoiOfType = loadedPois.some((poi) => {
+                          const cat = (poi as MapPOI & { category?: string }).category || "race";
+                          const catMatch = poiCategory === "visitor" ? cat === "visitor" || cat === "both" : cat === "race" || cat === "both";
+                          return catMatch && poi.type === key;
+                        });
+                        if (!hasPoiOfType) return null;
+                        return (
+                          <div key={key} className="flex items-center gap-2">
+                            <span
+                              className="w-5 h-5 rounded flex items-center justify-center shrink-0"
+                              style={{ background: icon.color }}
+                            >
+                              <i className={`ph-bold ph-${icon.icon}`} style={{ color: "white", fontSize: 11 }} />
+                            </span>
+                            <span>{icon.label}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
           )}
         </div>

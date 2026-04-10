@@ -223,7 +223,7 @@ FROM (
       WHEN 6  THEN 38.04977
       WHEN 7  THEN 38.05026
       WHEN 8  THEN 38.05154
-      WHEN 9  THEN 38.05028
+      WHEN 9  THEN 38.05026
       WHEN 10 THEN 38.04424
     END AS position_lat,
     CASE row_number() OVER (ORDER BY q.created_at)
@@ -235,7 +235,7 @@ FROM (
       WHEN 6  THEN -122.15831
       WHEN 7  THEN -122.15798
       WHEN 8  THEN -122.15709
-      WHEN 9  THEN -122.15778
+      WHEN 9  THEN -122.15902
       WHEN 10 THEN -122.16490
     END AS position_lng
   FROM questions q
@@ -323,7 +323,7 @@ INSERT INTO pois (name, type, category, position_lat, position_lng, location, ho
 -- Seed: POIs — Historic sites (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Benicia Capitol State Historic Park', 'historic', 'visitor', 38.05028, -122.15778, '115 west G street',        '10:00 AM – 5:00 PM', 'California''s 3rd state capitol (1853–1854), Greek Revival', 70),
+('Benicia Capitol State Historic Park', 'historic', 'visitor', 38.05026, -122.15902, '115 west G street',        '10:00 AM – 5:00 PM', 'California''s 3rd state capitol (1853–1854), Greek Revival', 70),
 ('Fischer-Hanlon House',                'historic', 'visitor', 38.05010, -122.15900, '135 west G street',        NULL, '1858 Gold Rush-era home, part of Capitol SHP', 71),
 ('Benicia Arsenal / Clock Tower',       'historic', 'visitor', 38.04611, -122.13472, 'arsenal drive',            NULL, '1859 sandstone fortress, oldest U.S. military storehouse in CA', 72),
 ('St. Paul''s Episcopal Church',        'historic', 'visitor', 38.05179, -122.15663, '120 east J street',        NULL, '1859, one of the oldest churches in California', 73),
