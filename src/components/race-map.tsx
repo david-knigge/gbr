@@ -95,11 +95,18 @@ function PopupContent({ title, details }: { title: string; details?: PopupDetail
 }
 
 // Build detail rows from structured POI fields
+// POI types that won't have a Google Maps business listing — link by coords instead
+const COORD_LINK_TYPES = new Set(["registration", "start", "finish", "aid", "restroom", "parking", "viewpoint", "park", "marina", "info", "stand", "other"]);
+
 function poiDetails(poi: MapPOI): PopupDetail[] {
   const rows: PopupDetail[] = [];
   if (poi.location) {
-    const q = encodeURIComponent(`${poi.location}, Benicia CA`);
-    rows.push({ text: `<a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener" style="color:#4DBFB3;text-decoration:none">${poi.location}</a>`, icon: "pin" });
+    const href = poi.gmaps_url
+      ? poi.gmaps_url
+      : COORD_LINK_TYPES.has(poi.type)
+        ? `https://www.google.com/maps/search/?api=1&query=${poi.position[0]},${poi.position[1]}`
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${poi.name}, Benicia CA`)}`;
+    rows.push({ text: `<a href="${href}" target="_blank" rel="noopener" style="color:#4DBFB3;text-decoration:none">${poi.location}</a>`, icon: "pin" });
   }
   if (poi.hours) {
     rows.push({ text: poi.hours, icon: "clock" });

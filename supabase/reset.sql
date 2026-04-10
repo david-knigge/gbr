@@ -62,6 +62,7 @@ CREATE TABLE pois (
   position_lat double precision NOT NULL,
   position_lng double precision NOT NULL,
   location text NOT NULL DEFAULT '',
+  gmaps_url text,
   hours text,
   description text,
   is_active boolean DEFAULT true,
@@ -214,28 +215,28 @@ FROM (
     END AS slug,
     'Scan this QR code to answer a STEAM question!' AS description,
     CASE row_number() OVER (ORDER BY q.created_at)
-      WHEN 1  THEN 38.0483
-      WHEN 2  THEN 38.0482
-      WHEN 3  THEN 38.0487
-      WHEN 4  THEN 38.0490
-      WHEN 5  THEN 38.0495
-      WHEN 6  THEN 38.0496
-      WHEN 7  THEN 38.0496
-      WHEN 8  THEN 38.0499
-      WHEN 9  THEN 38.0497
-      WHEN 10 THEN 38.0478
+      WHEN 1  THEN 38.04611
+      WHEN 2  THEN 38.04567
+      WHEN 3  THEN 38.04670
+      WHEN 4  THEN 38.04811
+      WHEN 5  THEN 38.04948
+      WHEN 6  THEN 38.04977
+      WHEN 7  THEN 38.05026
+      WHEN 8  THEN 38.05154
+      WHEN 9  THEN 38.05028
+      WHEN 10 THEN 38.04424
     END AS position_lat,
     CASE row_number() OVER (ORDER BY q.created_at)
-      WHEN 1  THEN -122.1587
-      WHEN 2  THEN -122.1588
-      WHEN 3  THEN -122.1584
-      WHEN 4  THEN -122.1575
-      WHEN 5  THEN -122.1558
-      WHEN 6  THEN -122.1553
-      WHEN 7  THEN -122.1550
-      WHEN 8  THEN -122.1532
-      WHEN 9  THEN -122.1560
-      WHEN 10 THEN -122.1592
+      WHEN 1  THEN -122.16154
+      WHEN 2  THEN -122.16180
+      WHEN 3  THEN -122.16103
+      WHEN 4  THEN -122.16002
+      WHEN 5  THEN -122.15857
+      WHEN 6  THEN -122.15831
+      WHEN 7  THEN -122.15798
+      WHEN 8  THEN -122.15709
+      WHEN 9  THEN -122.15778
+      WHEN 10 THEN -122.16490
     END AS position_lng
   FROM questions q
   WHERE q.is_active = true
@@ -248,109 +249,109 @@ FROM (
 -- Seed: POIs — Race
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Registration & Packet Pickup', 'registration', 'race', 38.0485, -122.1590, 'first street green', 'opens 7:00 AM', NULL, 1),
-('Start / Finish Line',          'start',        'race', 38.0482, -122.1588, 'first street at the waterfront', NULL, NULL, 2),
-('Aid Station 1',                'aid',           'race', 38.0510, -122.1550, '~1.5 mi mark', NULL, 'water & electrolytes', 3),
-('Aid Station 2',                'aid',           'race', 38.0530, -122.1510, '~3.1 mi (10k turnaround)', NULL, 'water & electrolytes', 4),
-('Restrooms — First Street',     'restroom',      'both', 38.0486, -122.1589, 'first street green', NULL, 'portable restrooms near registration', 5);
+('Registration & Packet Pickup', 'registration', 'race', 38.04505, -122.16113, 'first street green', 'opens 7:00 AM', NULL, 1),
+('Start / Finish Line',          'start',        'race', 38.04505, -122.16113, 'first street at the waterfront', NULL, NULL, 2),
+('Aid Station 1',                'aid',           'race', 38.05100, -122.15500, '~1.5 mi mark', NULL, 'water & electrolytes', 3),
+('Aid Station 2',                'aid',           'race', 38.05300, -122.15100, '~3.1 mi (10k turnaround)', NULL, 'water & electrolytes', 4),
+('Restrooms — First Street',     'restroom',      'both', 38.04505, -122.16113, 'first street green', NULL, 'portable restrooms near registration', 5);
 
 
 -- ============================================
 -- Seed: POIs — Parking (shared)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Street Parking',     'parking', 'both', 38.0490, -122.1575, 'first street', NULL, 'free, arrive early', 10),
-('City Parking Lot',   'parking', 'both', 38.0478, -122.1575, 'east 2nd street', NULL, '5 min walk to start', 11),
-('Parking — E Street', 'parking', 'both', 38.0495, -122.1565, 'east E street', NULL, 'additional overflow parking', 12);
+('Street Parking',     'parking', 'both', 38.04750, -122.16036, 'first street', NULL, 'free, arrive early', 10),
+('City Parking Lot',   'parking', 'both', 38.04845, -122.15683, 'east 2nd street', NULL, '5 min walk to start', 11),
+('Parking — E Street', 'parking', 'both', 38.04627, -122.15463, 'east E street', NULL, 'additional overflow parking', 12);
 
 
 -- ============================================
 -- Seed: POIs — Restaurants (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Sailor Jack''s',             'restaurant', 'visitor', 38.0482, -122.1588, '123 first street',  NULL, 'waterfront dining, seafood & American', 20),
-('Bella Siena',                'restaurant', 'visitor', 38.0483, -122.1587, '127 first street',  NULL, 'Italian fine dining', 21),
-('The Union Hotel',            'restaurant', 'visitor', 38.0489, -122.1578, '401 first street',  NULL, 'historic hotel restaurant', 22),
-('Lucca Bar & Grill',          'restaurant', 'visitor', 38.0490, -122.1575, '439 first street',  NULL, 'Italian-American, full bar', 23),
-('Mare Island Brewing Taphouse', 'restaurant', 'visitor', 38.0490, -122.1574, '440 first street', NULL, 'craft beer & pub food', 24),
-('Kaigan Sushi',               'restaurant', 'visitor', 38.0493, -122.1566, '560 first street',  NULL, 'Japanese, sushi bar', 25),
-('Mai Thai Cuisine',           'restaurant', 'visitor', 38.0497, -122.1543, '807 first street',  NULL, 'Thai cuisine', 26),
-('Pacifica Pizza',             'restaurant', 'visitor', 38.0499, -122.1533, '915 first street',  NULL, 'pizza & Italian', 27);
+('Sailor Jack''s',             'restaurant', 'visitor', 38.04567, -122.16180, '123 first street',  NULL, 'waterfront dining, seafood & American', 20),
+('Bella Siena',                'restaurant', 'visitor', 38.04588, -122.16169, '127 first street',  NULL, 'Italian fine dining', 21),
+('The Union Hotel',            'restaurant', 'visitor', 38.04751, -122.16036, '401 first street',  NULL, 'historic hotel restaurant', 22),
+('Lucca Bar & Grill',          'restaurant', 'visitor', 38.04811, -122.16002, '439 first street',  NULL, 'Italian-American, full bar', 23),
+('Mare Island Brewing Taphouse', 'restaurant', 'visitor', 38.04797, -122.15969, '440 first street', NULL, 'craft beer & pub food', 24),
+('Kaigan Sushi',               'restaurant', 'visitor', 38.04859, -122.15932, '560 first street',  NULL, 'Japanese, sushi bar', 25),
+('Mai Thai Cuisine',           'restaurant', 'visitor', 38.05092, -122.15798, '807 first street',  NULL, 'Thai cuisine', 26),
+('Pacifica Pizza',             'restaurant', 'visitor', 38.05165, -122.15736, '915 first street',  NULL, 'pizza & Italian', 27);
 
 
 -- ============================================
 -- Seed: POIs — Cafes & Bakeries (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Majestic Cafe',         'cafe',   'visitor', 38.0496, -122.1553, '700 first street',  NULL, 'specialty coffee & cafe', 30),
-('Rainbow Ice Cream',     'cafe',   'visitor', 38.0495, -122.1555, '701 first street',  NULL, 'ice cream & frozen treats', 33),
-('Fox & Fawn Bakehouse',  'bakery', 'visitor', 38.0487, -122.1584, '305 first street',  NULL, 'vegan bakery & pastries', 31),
-('One House Bakery',      'bakery', 'visitor', 38.0499, -122.1532, '918 first street',  NULL, 'artisan bakery & coffee', 32);
+('Majestic Cafe',         'cafe',   'visitor', 38.04977, -122.15831, '700 first street',  NULL, 'specialty coffee & cafe', 30),
+('Rainbow Ice Cream',     'cafe',   'visitor', 38.04993, -122.15859, '701 first street',  NULL, 'ice cream & frozen treats', 33),
+('Fox & Fawn Bakehouse',  'bakery', 'visitor', 38.04670, -122.16103, '305 first street',  NULL, 'vegan bakery & pastries', 31),
+('One House Bakery',      'bakery', 'visitor', 38.05154, -122.15709, '918 first street',  NULL, 'artisan bakery & coffee', 32);
 
 
 -- ============================================
 -- Seed: POIs — Bars & Wine (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('The Rellik Tavern',    'bar', 'visitor', 38.0496, -122.1550, '726 first street',  NULL, 'craft cocktails & whiskey', 40),
-('The Chill Wine Bar',   'bar', 'visitor', 38.0488, -122.1581, '362 first street',  NULL, 'wine bar, relaxed vibe', 41),
-('Rookies Sports Bar',   'bar', 'visitor', 38.0487, -122.1583, '321 first street',  NULL, 'sports bar & grill', 42),
-('Cullen''s Tannery Pub', 'bar', 'visitor', 38.0483, -122.1587, '131 first street', NULL, 'pub in the historic Tannery building', 43);
+('The Rellik Tavern',    'bar', 'visitor', 38.05026, -122.15798, '726 first street',  NULL, 'craft cocktails & whiskey', 40),
+('The Chill Wine Bar',   'bar', 'visitor', 38.04668, -122.16072, '362 first street',  NULL, 'wine bar, relaxed vibe', 41),
+('Rookies Sports Bar',   'bar', 'visitor', 38.04655, -122.16105, '321 first street',  NULL, 'sports bar & grill', 42),
+('Cullen''s Tannery Pub', 'bar', 'visitor', 38.04611, -122.16154, '131 first street', NULL, 'pub in the historic Tannery building', 43);
 
 
 -- ============================================
 -- Seed: POIs — Retail & Shops (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Bookshop Benicia',       'retail', 'visitor', 38.0495, -122.1558, '636 first street',  NULL, 'independent bookstore', 50),
-('Pink Arrows Boutique',   'retail', 'visitor', 38.0488, -122.1580, '372 first street',  NULL, 'women''s clothing & accessories', 51),
-('Sparkly Ragz',           'retail', 'visitor', 38.0495, -122.1557, '638 first street',  NULL, 'consignment & vintage', 52),
-('Collektive Boutique',    'retail', 'visitor', 38.0500, -122.1530, '935 first street',  NULL, 'curated clothing & gifts', 53);
+('Bookshop Benicia',       'retail', 'visitor', 38.04948, -122.15857, '636 first street',  NULL, 'independent bookstore', 50),
+('Pink Arrows Boutique',   'retail', 'visitor', 38.04671, -122.16070, '372 first street',  NULL, 'women''s clothing & accessories', 51),
+('Sparkly Ragz',           'retail', 'visitor', 38.04926, -122.15882, '638 first street',  NULL, 'consignment & vintage', 52),
+('Collektive Boutique',    'retail', 'visitor', 38.05212, -122.15707, '935 first street',  NULL, 'curated clothing & gifts', 53);
 
 
 -- ============================================
 -- Seed: POIs — Galleries & Art (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('The Little Art Shop',       'gallery', 'visitor', 38.0483, -122.1587, '129 first street (Tannery building)', NULL, 'local art & prints', 60),
-('Benicia Plein Air Gallery', 'gallery', 'visitor', 38.0487, -122.1584, '307 first street',                    NULL, 'plein air paintings of Benicia & beyond', 61),
-('Happy Life Pottery',        'gallery', 'visitor', 38.0495, -122.1558, '632 first street',                    NULL, 'pottery studio & gallery', 62),
-('Arts Benicia',              'gallery', 'visitor', 38.0522, -122.1467, '1 Commandants Lane (Arsenal)',        NULL, 'community art gallery in historic Arsenal', 63);
+('The Little Art Shop',       'gallery', 'visitor', 38.04604, -122.16172, '129 first street (Tannery building)', NULL, 'local art & prints', 60),
+('Benicia Plein Air Gallery', 'gallery', 'visitor', 38.04678, -122.16097, '307 first street',                    NULL, 'plein air paintings of Benicia & beyond', 61),
+('Happy Life Pottery',        'gallery', 'visitor', 38.04938, -122.15865, '632 first street',                    NULL, 'pottery studio & gallery', 62),
+('Arts Benicia',              'gallery', 'visitor', 38.04765, -122.13937, '1 Commandants Lane (Arsenal)',        NULL, 'community art gallery in historic Arsenal', 63);
 
 
 -- ============================================
 -- Seed: POIs — Historic sites (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Benicia Capitol State Historic Park', 'historic', 'visitor', 38.0497, -122.1560, '115 west G street',        '10:00 AM – 5:00 PM', 'California''s 3rd state capitol (1853–1854), Greek Revival', 70),
-('Fischer-Hanlon House',                'historic', 'visitor', 38.0498, -122.1562, '135 west G street',        NULL, '1858 Gold Rush-era home, part of Capitol SHP', 71),
-('Benicia Arsenal / Clock Tower',       'historic', 'visitor', 38.0520, -122.1470, 'arsenal drive',            NULL, '1859 sandstone fortress, oldest U.S. military storehouse in CA', 72),
-('St. Paul''s Episcopal Church',        'historic', 'visitor', 38.0500, -122.1525, '120 east J street',        NULL, '1859, one of the oldest churches in California', 73),
-('The Tannery Building',                'historic', 'visitor', 38.0483, -122.1587, '131 first street',         NULL, 'historic industrial building, now shops & restaurants', 74);
+('Benicia Capitol State Historic Park', 'historic', 'visitor', 38.05028, -122.15778, '115 west G street',        '10:00 AM – 5:00 PM', 'California''s 3rd state capitol (1853–1854), Greek Revival', 70),
+('Fischer-Hanlon House',                'historic', 'visitor', 38.05010, -122.15900, '135 west G street',        NULL, '1858 Gold Rush-era home, part of Capitol SHP', 71),
+('Benicia Arsenal / Clock Tower',       'historic', 'visitor', 38.04611, -122.13472, 'arsenal drive',            NULL, '1859 sandstone fortress, oldest U.S. military storehouse in CA', 72),
+('St. Paul''s Episcopal Church',        'historic', 'visitor', 38.05179, -122.15663, '120 east J street',        NULL, '1859, one of the oldest churches in California', 73),
+('The Tannery Building',                'historic', 'visitor', 38.04611, -122.16154, '131 first street',         NULL, 'historic industrial building, now shops & restaurants', 74);
 
 
 -- ============================================
 -- Seed: POIs — Parks & Green spaces (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('First Street Green',              'park', 'both',    38.0485, -122.1590, 'first street at B street',     NULL, 'waterfront park, event lawn & benches', 80),
-('City Park',                       'park', 'visitor', 38.0455, -122.1650, 'west 9th street',              NULL, 'playground, BBQs, strait views, fishing pier', 81),
-('Matthew Turner Shipyard Park',    'park', 'visitor', 38.0460, -122.1640, 'west of downtown, waterfront', NULL, 'ship-themed playground, waterfront walking', 82),
-('Benicia State Recreation Area',   'park', 'visitor', 38.0440, -122.1790, 'west end, off I-780',          NULL, '720 acres — hiking, biking, birdwatching, shoreline', 83);
+('First Street Green',              'park', 'both',    38.04505, -122.16113, 'first street at B street',     NULL, 'waterfront park, event lawn & benches', 80),
+('City Park',                       'park', 'visitor', 38.05944, -122.17420, 'west 9th street',              NULL, 'playground, BBQs, strait views, fishing pier', 81),
+('Matthew Turner Shipyard Park',    'park', 'visitor', 38.06251, -122.17906, 'west of downtown, waterfront', NULL, 'ship-themed playground, waterfront walking', 82),
+('Benicia State Recreation Area',   'park', 'visitor', 38.07361, -122.19306, 'west end, off I-780',          NULL, '720 acres — hiking, biking, birdwatching, shoreline', 83);
 
 
 -- ============================================
 -- Seed: POIs — Waterfront & Marina (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Benicia Marina',           'marina', 'visitor', 38.0479, -122.1560, '266 east B street',         NULL, 'boat slips, waterfront promenade', 90),
-('Benicia Point Pier',       'marina', 'visitor', 38.0478, -122.1592, 'end of first street',       NULL, 'fishing pier, beach access, strait views', 91),
-('Waterfront Promenade',     'marina', 'visitor', 38.0480, -122.1575, 'waterfront between 1st & marina', NULL, 'paved walking & cycling path', 92);
+('Benicia Marina',           'marina', 'visitor', 38.04580, -122.15631, '266 east B street',         NULL, 'boat slips, waterfront promenade', 90),
+('Benicia Point Pier',       'marina', 'visitor', 38.04424, -122.16490, 'end of first street',       NULL, 'fishing pier, beach access, strait views', 91),
+('Waterfront Promenade',     'marina', 'visitor', 38.04500, -122.15870, 'waterfront between 1st & marina', NULL, 'paved walking & cycling path', 92);
 
 
 -- ============================================
 -- Seed: POIs — Viewpoints (visitor)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Point Pier Viewpoint',     'viewpoint', 'visitor', 38.0478, -122.1592, 'end of first street',      NULL, 'panoramic views of Carquinez Strait & bridge', 95),
-('9th Street Pier Viewpoint', 'viewpoint', 'visitor', 38.0455, -122.1655, 'west 9th street pier',    NULL, 'unobstructed strait and hillside views', 96);
+('Point Pier Viewpoint',     'viewpoint', 'visitor', 38.04424, -122.16490, 'end of first street',      NULL, 'panoramic views of Carquinez Strait & bridge', 95),
+('9th Street Pier Viewpoint', 'viewpoint', 'visitor', 38.05944, -122.17420, 'west 9th street pier',    NULL, 'unobstructed strait and hillside views', 96);

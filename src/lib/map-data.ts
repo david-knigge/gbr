@@ -5,6 +5,7 @@ export interface MapPOI {
   category: "race" | "visitor" | "both";
   position: [number, number];
   location: string;         // always shown, links to google maps
+  gmaps_url?: string | null; // direct Google Maps link (overrides search)
   hours?: string | null;    // optional time/hours row
   description?: string | null; // optional extra detail
 }

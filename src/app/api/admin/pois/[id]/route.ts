@@ -5,7 +5,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const supabase = getSupabaseAdmin();
   const { id } = await params;
   const body = await req.json();
-  const { name, type, category, position_lat, position_lng, location, hours, description, is_active, sort_order } = body;
+  const { name, type, category, position_lat, position_lng, location, gmaps_url, hours, description, is_active, sort_order } = body;
 
   const { data, error } = await supabase
     .from("pois")
@@ -16,6 +16,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       position_lat,
       position_lng,
       location: location || "",
+      gmaps_url: gmaps_url || null,
       hours: hours || null,
       description: description || null,
       is_active,

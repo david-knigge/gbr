@@ -18,13 +18,14 @@ export async function GET() {
     return NextResponse.json(
       snapshot.pois
         .filter((p: { is_active: boolean }) => p.is_active !== false)
-        .map((p: { name: string; type: string; category?: string; position_lat: number; position_lng: number; location?: string; hours?: string; description?: string }) => ({
+        .map((p: { name: string; type: string; category?: string; position_lat: number; position_lng: number; location?: string; gmaps_url?: string; hours?: string; description?: string }) => ({
           id: p.name,
           name: p.name,
           type: p.type,
           category: p.category || "race",
           position: [p.position_lat, p.position_lng],
           location: p.location || "",
+          gmaps_url: p.gmaps_url || null,
           hours: p.hours || null,
           description: p.description || null,
         }))
@@ -41,6 +42,7 @@ export async function GET() {
       category: p.category,
       position: p.position,
       location: p.location,
+      gmaps_url: p.gmaps_url || null,
       hours: p.hours || null,
       description: p.description || null,
     }))

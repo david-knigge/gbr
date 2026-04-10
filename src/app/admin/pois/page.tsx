@@ -41,6 +41,7 @@ interface POI {
   position_lat: number;
   position_lng: number;
   location: string;
+  gmaps_url: string | null;
   hours: string | null;
   description: string | null;
   is_active: boolean;
@@ -54,6 +55,7 @@ const emptyForm = {
   position_lat: "",
   position_lng: "",
   location: "",
+  gmaps_url: "",
   hours: "",
   description: "",
   sort_order: "0",
@@ -94,6 +96,7 @@ export default function POIsAdminPage() {
       position_lat: String(poi.position_lat),
       position_lng: String(poi.position_lng),
       location: poi.location || "",
+      gmaps_url: poi.gmaps_url || "",
       hours: poi.hours || "",
       description: poi.description || "",
       sort_order: String(poi.sort_order),
@@ -118,6 +121,7 @@ export default function POIsAdminPage() {
       position_lat: parseFloat(form.position_lat),
       position_lng: parseFloat(form.position_lng),
       location: form.location,
+      gmaps_url: form.gmaps_url || null,
       hours: form.hours || null,
       description: form.description || null,
       sort_order: parseInt(form.sort_order) || 0,
@@ -271,6 +275,17 @@ export default function POIsAdminPage() {
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
                 placeholder="e.g. 123 First Street"
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                🔗 Google Maps URL <span className="text-gray-400 font-normal">(optional — paste direct link, falls back to name search)</span>
+              </label>
+              <input
+                className="w-full border rounded px-3 py-2 text-sm"
+                value={form.gmaps_url}
+                onChange={(e) => setForm({ ...form, gmaps_url: e.target.value })}
+                placeholder="e.g. https://maps.app.goo.gl/abc123"
               />
             </div>
             <div>
