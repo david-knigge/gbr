@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS donations CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS checkpoints CASCADE;
 DROP TABLE IF EXISTS questions CASCADE;
+DROP TABLE IF EXISTS routes CASCADE;
 DROP TABLE IF EXISTS pois CASCADE;
 
 -- ============================================
