@@ -298,7 +298,8 @@ INSERT INTO pois (name, type, category, position_lat, position_lng, location, ho
 ('Mare Island Brewing Taphouse', 'restaurant', 'visitor', 38.04797, -122.15969, '440 first street', NULL, 'craft beer & pub food', 24),
 ('Kaigan Sushi',               'restaurant', 'visitor', 38.04859, -122.15932, '560 first street',  NULL, 'Japanese, sushi bar', 25),
 ('Mai Thai Cuisine',           'restaurant', 'visitor', 38.05092, -122.15798, '807 first street',  NULL, 'Thai cuisine', 26),
-('Pacifica Pizza',             'restaurant', 'visitor', 38.05165, -122.15736, '915 first street',  NULL, 'pizza & Italian', 27);
+('Elviarita''s',               'restaurant', 'visitor', 38.05009, -122.15848, '727 first street',  NULL, 'Mexican cantina & catering', 27),
+('Pacifica Pizza',             'restaurant', 'visitor', 38.05165, -122.15736, '915 first street',  NULL, 'pizza & Italian', 28);
 
 
 -- ============================================
