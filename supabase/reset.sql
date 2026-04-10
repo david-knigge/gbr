@@ -190,53 +190,53 @@ FROM (
     q.id AS question_id,
     row_number() OVER (ORDER BY q.created_at) - 1 AS sort_order,
     CASE row_number() OVER (ORDER BY q.created_at)
-      WHEN 1  THEN 'The Tannery Building'
-      WHEN 2  THEN 'Sailor Jack''s'
-      WHEN 3  THEN 'Fox & Fawn Bakehouse'
-      WHEN 4  THEN 'Lucca Bar & Grill'
-      WHEN 5  THEN 'Bookshop Benicia'
-      WHEN 6  THEN 'Majestic Cafe'
-      WHEN 7  THEN 'The Rellik Tavern'
-      WHEN 8  THEN 'One House Bakery'
-      WHEN 9  THEN 'Benicia Capitol'
-      WHEN 10 THEN 'Benicia Point Pier'
+      WHEN 1  THEN 'Sailor Jack''s'
+      WHEN 2  THEN 'Bella Siena'
+      WHEN 3  THEN 'Char''s Hot Dogs'
+      WHEN 4  THEN 'Fox & Fawn Bakehouse'
+      WHEN 5  THEN 'Happy Life Pottery'
+      WHEN 6  THEN 'Sandoval''s'
+      WHEN 7  THEN 'Elviarita''s'
+      WHEN 8  THEN 'Majestic Cafe'
+      WHEN 9  THEN 'One House Bakery'
+      WHEN 10 THEN 'The Collective'
     END AS name,
     CASE row_number() OVER (ORDER BY q.created_at)
-      WHEN 1  THEN 'tannery-building'
-      WHEN 2  THEN 'sailor-jacks'
-      WHEN 3  THEN 'fox-fawn-bakehouse'
-      WHEN 4  THEN 'lucca-bar'
-      WHEN 5  THEN 'bookshop-benicia'
-      WHEN 6  THEN 'majestic-cafe'
-      WHEN 7  THEN 'rellik-tavern'
-      WHEN 8  THEN 'one-house-bakery'
-      WHEN 9  THEN 'benicia-capitol'
-      WHEN 10 THEN 'benicia-point-pier'
+      WHEN 1  THEN 'sailor-jacks'
+      WHEN 2  THEN 'bella-siena'
+      WHEN 3  THEN 'chars-hot-dogs'
+      WHEN 4  THEN 'fox-fawn-bakehouse'
+      WHEN 5  THEN 'happy-life-pottery'
+      WHEN 6  THEN 'sandovals'
+      WHEN 7  THEN 'elviaritas'
+      WHEN 8  THEN 'majestic-cafe'
+      WHEN 9  THEN 'one-house-bakery'
+      WHEN 10 THEN 'the-collective'
     END AS slug,
     'Scan this QR code to answer a STEAM question!' AS description,
     CASE row_number() OVER (ORDER BY q.created_at)
-      WHEN 1  THEN 38.04611
-      WHEN 2  THEN 38.04567
-      WHEN 3  THEN 38.04670
-      WHEN 4  THEN 38.04811
-      WHEN 5  THEN 38.04948
-      WHEN 6  THEN 38.04977
-      WHEN 7  THEN 38.05026
-      WHEN 8  THEN 38.05154
-      WHEN 9  THEN 38.05026
-      WHEN 10 THEN 38.04424
+      WHEN 1  THEN 38.04567
+      WHEN 2  THEN 38.04588
+      WHEN 3  THEN 38.04611
+      WHEN 4  THEN 38.04670
+      WHEN 5  THEN 38.04938
+      WHEN 6  THEN 38.04927
+      WHEN 7  THEN 38.05009
+      WHEN 8  THEN 38.04977
+      WHEN 9  THEN 38.05154
+      WHEN 10 THEN 38.05212
     END AS position_lat,
     CASE row_number() OVER (ORDER BY q.created_at)
-      WHEN 1  THEN -122.16154
-      WHEN 2  THEN -122.16180
-      WHEN 3  THEN -122.16103
-      WHEN 4  THEN -122.16002
-      WHEN 5  THEN -122.15857
-      WHEN 6  THEN -122.15831
-      WHEN 7  THEN -122.15798
-      WHEN 8  THEN -122.15709
-      WHEN 9  THEN -122.15902
-      WHEN 10 THEN -122.16490
+      WHEN 1  THEN -122.16180
+      WHEN 2  THEN -122.16169
+      WHEN 3  THEN -122.16154
+      WHEN 4  THEN -122.16103
+      WHEN 5  THEN -122.15865
+      WHEN 6  THEN -122.15881
+      WHEN 7  THEN -122.15848
+      WHEN 8  THEN -122.15831
+      WHEN 9  THEN -122.15709
+      WHEN 10 THEN -122.15707
     END AS position_lng
   FROM questions q
   WHERE q.is_active = true
@@ -260,9 +260,11 @@ INSERT INTO pois (name, type, category, position_lat, position_lng, location, ho
 -- Seed: POIs — Parking (shared)
 -- ============================================
 INSERT INTO pois (name, type, category, position_lat, position_lng, location, hours, description, sort_order) VALUES
-('Street Parking',     'parking', 'both', 38.04750, -122.16036, 'first street', NULL, 'free, arrive early', 10),
-('City Parking Lot',   'parking', 'both', 38.04845, -122.15683, 'east 2nd street', NULL, '5 min walk to start', 11),
-('Parking — E Street', 'parking', 'both', 38.04627, -122.15463, 'east E street', NULL, 'additional overflow parking', 12);
+('P1 — Public Lot (Yacht Club)',    'parking', 'both', 38.04645, -122.15778, 'near Yacht Club, E 2nd St',        NULL, 'free parking', 10),
+('P2 — City Hall Lot',              'parking', 'both', 38.05238, -122.15320, 'City Hall, W N St',                NULL, 'free parking', 11),
+('P3 — Liberty High School Lot',    'parking', 'both', 38.05020, -122.15163, 'Liberty High School, E K St',      NULL, 'free parking', 12),
+('V — Vendor / Volunteer Lot',      'parking', 'race', 38.04480, -122.16200, 'near 1st & E 2nd St',              'closes 7 AM, reopens 12 PM', 'vendor & volunteer parking only', 13),
+('4+ADA — ADA & Public Lot',        'parking', 'both', 38.04430, -122.15900, 'south waterfront, E 2nd St',       NULL, 'ADA accessible + public parking', 14);
 
 
 -- ============================================

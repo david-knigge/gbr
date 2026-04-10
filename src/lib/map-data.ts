@@ -76,7 +76,7 @@ export const POI_ICONS: Record<string, POIIconConfig> = {
   restroom:     { icon: "toilet",            label: "restrooms",      color: "#8a8a9a" },
 
   // shared
-  parking:      { icon: "car-simple",        label: "parking",        color: "#5B73A8" },
+  parking:      { icon: "letter-circle-p",    label: "parking",        color: "#5B73A8" },
 
   // visitor: food & drink
   restaurant:   { icon: "fork-knife",        label: "restaurant",     color: "#D4764E" },
