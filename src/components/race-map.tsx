@@ -13,6 +13,26 @@ import { isCheckpointScanned } from "@/lib/quest-store";
 const RACE_CENTER: [number, number] = [38.0494, -122.1586];
 const DEFAULT_ZOOM = 15;
 
+// Free street parking segments traced from the organiser's parking map
+const PARKING_STREETS: [number, number][][] = [
+  // East L Street (E 2nd → Military)
+  [[38.0541, -122.1575], [38.0533, -122.1555], [38.0524, -122.1530], [38.0515, -122.1500], [38.0510, -122.1480]],
+  // East K Street (E 2nd → Military)
+  [[38.0530, -122.1580], [38.0522, -122.1558], [38.0514, -122.1536], [38.0505, -122.1510], [38.0500, -122.1490]],
+  // Military East (E N St → E G St)
+  [[38.0540, -122.1475], [38.0530, -122.1478], [38.0515, -122.1483], [38.0500, -122.1490], [38.0490, -122.1496]],
+  // East 5th Street (E L → E G)
+  [[38.0538, -122.1530], [38.0528, -122.1533], [38.0518, -122.1537], [38.0505, -122.1542]],
+  // East 4th Street (E L → E H)
+  [[38.0540, -122.1548], [38.0530, -122.1553], [38.0520, -122.1557]],
+  // East 3rd Street (E K → E H)
+  [[38.0530, -122.1568], [38.0520, -122.1572], [38.0510, -122.1578]],
+  // East 2nd Street (E K → waterfront area)
+  [[38.0530, -122.1583], [38.0520, -122.1587], [38.0505, -122.1593], [38.0490, -122.1600]],
+  // West H Street (short segment near downtown)
+  [[38.0520, -122.1610], [38.0515, -122.1598], [38.0510, -122.1585]],
+];
+
 interface CheckpointMarker {
   id: string;
   name: string;
@@ -52,19 +72,26 @@ const userIcon = L.divIcon({
   iconAnchor: [9, 9],
 });
 
-function poiIcon(type: string) {
+function poiIcon(type: string, name?: string) {
   const config: POIIconConfig = POI_ICONS[type] || POI_ICONS.other;
+  const label = name ? `<div style="
+    position:absolute; top:24px; left:50%; transform:translateX(-50%);
+    white-space:nowrap; font-size:9px; font-weight:600; font-family:system-ui,sans-serif;
+    color:#333; text-shadow: 0 0 3px white, 0 0 3px white, 0 0 3px white;
+    pointer-events:none;
+  ">${name.length > 18 ? name.slice(0, 16) + '…' : name}</div>` : '';
   return L.divIcon({
     className: "",
-    html: `<div style="
-      width: 30px; height: 30px; border-radius: 8px;
-      background: ${config.color};
-      border: 2px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      display: flex; align-items: center; justify-content: center;
-    "><i class="ph-bold ph-${config.icon}" style="color:white;font-size:15px;"></i></div>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
+    html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center;">
+      <div style="
+        width: 22px; height: 22px; border-radius: 6px;
+        background: ${config.color};
+        border: 2px solid white;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+        display: flex; align-items: center; justify-content: center;
+      "><i class="ph-bold ph-${config.icon}" style="color:white;font-size:11px;"></i></div>${label}</div>`,
+    iconSize: [22, 36],
+    iconAnchor: [11, 11],
   });
 }
 
@@ -170,6 +197,7 @@ export function RaceMap({
   const [visibleGroups, setVisibleGroups] = useState<Set<string>>(
     () => new Set(POI_GROUPS.filter((g) => g.defaultOn).map((g) => g.key))
   );
+  const [showParkingStreets, setShowParkingStreets] = useState(true);
   const [loadedPois, setLoadedPois] = useState<MapPOI[]>([]);
   const [checkpoints, setCheckpoints] = useState<CheckpointMarker[]>([]);
   const [locationDenied, setLocationDenied] = useState(false);
@@ -306,9 +334,25 @@ export function RaceMap({
             </Polyline>
           ))}
 
+        {showParkingStreets &&
+          PARKING_STREETS.map((segment, i) => (
+            <Polyline
+              key={`parking-${i}`}
+              positions={segment}
+              pathOptions={{
+                color: "#5B73A8",
+                weight: 5,
+                opacity: 0.35,
+                lineCap: "round",
+                lineJoin: "round",
+                interactive: false,
+              }}
+            />
+          ))}
+
         {showPOIs &&
           filteredPois.map((poi) => (
-            <Marker key={`${poi.name}-${poi.position[0]}`} position={poi.position} icon={poiIcon(poi.type)}>
+            <Marker key={`${poi.name}-${poi.position[0]}`} position={poi.position} icon={poiIcon(poi.type, poi.name)}>
               <Popup><PopupContent title={poi.name} details={poiDetails(poi)} /></Popup>
             </Marker>
           ))}
@@ -369,6 +413,17 @@ export function RaceMap({
                   <hr className="border-card-border" />
                 </>
               )}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showParkingStreets}
+                  onChange={() => setShowParkingStreets(!showParkingStreets)}
+                  className="rounded accent-teal w-3.5 h-3.5"
+                />
+                <span className="w-4 h-1 rounded-full opacity-60 shrink-0" style={{ background: "#5B73A8" }} />
+                <span className="text-xs font-medium text-foreground">street parking</span>
+              </label>
+              <hr className="border-card-border" />
               {activeGroups.map((group) => (
                 <div key={group.key}>
                   <label className="flex items-center gap-2 cursor-pointer">
