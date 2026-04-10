@@ -9,8 +9,7 @@ const NAV_ITEMS = [
   { href: "/admin/checkpoints", label: "Checkpoints" },
   { href: "/admin/questions", label: "Questions" },
   { href: "/admin/pois", label: "Map POIs" },
-  { href: "/admin/donations", label: "Donations" },
-  { href: "/admin/raffle", label: "Raffle" },
+  { href: "/admin/routes", label: "Routes" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

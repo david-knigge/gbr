@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/admin-auth";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
+import { invalidateCache } from "@/lib/cache";
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get("admin_session")?.value;
@@ -43,5 +44,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  invalidateCache("checkpoints");
+  invalidateCache("scan-data");
   return NextResponse.json(data, { status: 201 });
 }

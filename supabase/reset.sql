@@ -54,6 +54,26 @@ CREATE TABLE checkpoints (
 -- ============================================
 -- POIs (map points of interest)
 -- ============================================
+-- ============================================
+-- Routes (courses, parking streets, etc.)
+-- ============================================
+CREATE TABLE routes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  type text NOT NULL DEFAULT 'course',       -- course | parking | other
+  color text NOT NULL DEFAULT '#E8643B',
+  weight int NOT NULL DEFAULT 6,
+  opacity double precision NOT NULL DEFAULT 0.9,
+  dash_array text,                           -- e.g. '6 8' for dashed
+  label text,                                -- e.g. '8:00 AM' for start time
+  points jsonb NOT NULL DEFAULT '[]'::jsonb, -- [[lat,lng], ...]
+  is_active boolean DEFAULT true,
+  sort_order int DEFAULT 0,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+
 CREATE TABLE pois (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,

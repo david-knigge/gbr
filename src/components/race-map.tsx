@@ -4,7 +4,6 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
-import { COURSES } from "@/lib/course-data";
 import type { MapPOI, POIIconConfig } from "@/lib/map-data";
 import { POI_ICONS, POI_GROUPS } from "@/lib/map-data";
 import { isCheckpointScanned } from "@/lib/quest-store";
@@ -13,25 +12,17 @@ import { isCheckpointScanned } from "@/lib/quest-store";
 const RACE_CENTER: [number, number] = [38.0494, -122.1586];
 const DEFAULT_ZOOM = 15;
 
-// Free street parking segments traced from the organiser's parking map
-const PARKING_STREETS: [number, number][][] = [
-  // East L Street (E 2nd → Military)
-  [[38.0541, -122.1575], [38.0533, -122.1555], [38.0524, -122.1530], [38.0515, -122.1500], [38.0510, -122.1480]],
-  // East K Street (E 2nd → Military)
-  [[38.0530, -122.1580], [38.0522, -122.1558], [38.0514, -122.1536], [38.0505, -122.1510], [38.0500, -122.1490]],
-  // Military East (E N St → E G St)
-  [[38.0540, -122.1475], [38.0530, -122.1478], [38.0515, -122.1483], [38.0500, -122.1490], [38.0490, -122.1496]],
-  // East 5th Street (E L → E G)
-  [[38.0538, -122.1530], [38.0528, -122.1533], [38.0518, -122.1537], [38.0505, -122.1542]],
-  // East 4th Street (E L → E H)
-  [[38.0540, -122.1548], [38.0530, -122.1553], [38.0520, -122.1557]],
-  // East 3rd Street (E K → E H)
-  [[38.0530, -122.1568], [38.0520, -122.1572], [38.0510, -122.1578]],
-  // East 2nd Street (E K → waterfront area)
-  [[38.0530, -122.1583], [38.0520, -122.1587], [38.0505, -122.1593], [38.0490, -122.1600]],
-  // West H Street (short segment near downtown)
-  [[38.0520, -122.1610], [38.0515, -122.1598], [38.0510, -122.1585]],
-];
+interface LoadedRoute {
+  id: string;
+  name: string;
+  type: string;
+  color: string;
+  weight: number;
+  opacity: number;
+  dash_array: string | null;
+  label: string | null;
+  points: [number, number][];
+}
 
 interface CheckpointMarker {
   id: string;
@@ -190,17 +181,27 @@ export function RaceMap({
   showCheckpoints = false,
 }: RaceMapProps) {
   const [userPosition, setUserPosition] = useState<[number, number] | null>(null);
-  const [visibleCourses, setVisibleCourses] = useState<Set<string>>(
-    new Set(COURSES.map((c) => c.name))
-  );
+  const [routes, setRoutes] = useState<LoadedRoute[]>([]);
+  const [visibleRoutes, setVisibleRoutes] = useState<Set<string>>(new Set());
   const [legendOpen, setLegendOpen] = useState(true);
   const [visibleGroups, setVisibleGroups] = useState<Set<string>>(
     () => new Set(POI_GROUPS.filter((g) => g.defaultOn).map((g) => g.key))
   );
-  const [showParkingStreets, setShowParkingStreets] = useState(true);
   const [loadedPois, setLoadedPois] = useState<MapPOI[]>([]);
   const [checkpoints, setCheckpoints] = useState<CheckpointMarker[]>([]);
   const [locationDenied, setLocationDenied] = useState(false);
+
+  // Load routes
+  useEffect(() => {
+    fetch("/api/routes")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: LoadedRoute[]) => {
+        setRoutes(data);
+        // All routes visible by default
+        setVisibleRoutes(new Set(data.map((r) => r.id)));
+      })
+      .catch(() => {});
+  }, []);
 
   // Load POIs
   useEffect(() => {
@@ -233,14 +234,17 @@ export function RaceMap({
     setUserPosition(pos);
   }, []);
 
-  const toggleCourse = (name: string) => {
-    setVisibleCourses((prev) => {
+  const toggleRoute = (id: string) => {
+    setVisibleRoutes((prev) => {
       const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
+
+  const courseRoutes = routes.filter((r) => r.type === "course");
+  const parkingRoutes = showCheckpoints ? [] : routes.filter((r) => r.type === "parking");
 
   // Build set of visible POI types from toggled groups
   const visiblePoiTypes = new Set(
@@ -301,12 +305,12 @@ export function RaceMap({
 
         {/* ghost courses — thin, dashed, non-interactive */}
         {ghostCourses &&
-          COURSES.map((course) => (
+          courseRoutes.map((route) => (
             <Polyline
-              key={`ghost-${course.name}`}
-              positions={course.points}
+              key={`ghost-${route.id}`}
+              positions={route.points}
               pathOptions={{
-                color: course.color,
+                color: route.color,
                 weight: 3,
                 opacity: 0.8,
                 dashArray: "6 8",
@@ -317,37 +321,33 @@ export function RaceMap({
             />
           ))}
 
-        {showCourses &&
-          COURSES.filter((c) => visibleCourses.has(c.name)).map((course) => (
+        {/* All visible routes */}
+        {routes
+          .filter((r) => visibleRoutes.has(r.id))
+          .filter((r) => showCourses || r.type !== "course")
+          .map((route) => (
             <Polyline
-              key={course.name}
-              positions={course.points}
+              key={route.id}
+              positions={route.points}
               pathOptions={{
-                color: course.color,
-                weight: 6,
-                opacity: 0.9,
+                color: route.color,
+                weight: route.weight,
+                opacity: route.opacity,
+                dashArray: route.dash_array || undefined,
                 lineCap: "round",
                 lineJoin: "round",
+                interactive: route.type === "course",
               }}
             >
-              <Popup><PopupContent title={course.name} details={[{ text: course.startTime, icon: "clock" }]} /></Popup>
+              {route.type === "course" && (
+                <Popup>
+                  <PopupContent
+                    title={route.name}
+                    details={route.label ? [{ text: route.label, icon: "clock" }] : []}
+                  />
+                </Popup>
+              )}
             </Polyline>
-          ))}
-
-        {showParkingStreets &&
-          PARKING_STREETS.map((segment, i) => (
-            <Polyline
-              key={`parking-${i}`}
-              positions={segment}
-              pathOptions={{
-                color: "#5B73A8",
-                weight: 5,
-                opacity: 0.35,
-                lineCap: "round",
-                lineJoin: "round",
-                interactive: false,
-              }}
-            />
           ))}
 
         {showPOIs &&
@@ -394,36 +394,42 @@ export function RaceMap({
               {showCourses && (
                 <>
                   <div className="text-[10px] font-medium text-muted uppercase tracking-wide">courses</div>
-                  {COURSES.map((course) => (
-                    <label key={course.name} className="flex items-center gap-2 cursor-pointer">
+                  {courseRoutes.map((route) => (
+                    <label key={route.id} className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={visibleCourses.has(course.name)}
-                        onChange={() => toggleCourse(course.name)}
+                        checked={visibleRoutes.has(route.id)}
+                        onChange={() => toggleRoute(route.id)}
                         className="rounded accent-teal w-3.5 h-3.5"
                       />
                       <span
                         className="w-2.5 h-2.5 rounded-sm"
-                        style={{ background: course.color }}
+                        style={{ background: route.color }}
                       />
-                      <span className="text-xs font-medium text-foreground">{course.name}</span>
-                      <span className="text-[10px] text-muted ml-auto">{course.startTime}</span>
+                      <span className="text-xs font-medium text-foreground">{route.name}</span>
+                      {route.label && <span className="text-[10px] text-muted ml-auto">{route.label}</span>}
                     </label>
                   ))}
                   <hr className="border-card-border" />
                 </>
               )}
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showParkingStreets}
-                  onChange={() => setShowParkingStreets(!showParkingStreets)}
-                  className="rounded accent-teal w-3.5 h-3.5"
-                />
-                <span className="w-4 h-1 rounded-full opacity-60 shrink-0" style={{ background: "#5B73A8" }} />
-                <span className="text-xs font-medium text-foreground">street parking</span>
-              </label>
-              <hr className="border-card-border" />
+              {parkingRoutes.length > 0 && (
+                <>
+                  {parkingRoutes.map((route) => (
+                    <label key={route.id} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={visibleRoutes.has(route.id)}
+                        onChange={() => toggleRoute(route.id)}
+                        className="rounded accent-teal w-3.5 h-3.5"
+                      />
+                      <span className="w-4 h-1 rounded-full shrink-0" style={{ background: route.color, opacity: route.opacity }} />
+                      <span className="text-xs font-medium text-foreground">{route.name}</span>
+                    </label>
+                  ))}
+                  <hr className="border-card-border" />
+                </>
+              )}
               {activeGroups.map((group) => (
                 <div key={group.key}>
                   <label className="flex items-center gap-2 cursor-pointer">

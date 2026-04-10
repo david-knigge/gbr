@@ -5,7 +5,7 @@ import { invalidateCache } from "@/lib/cache";
 export async function GET() {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
-    .from("pois")
+    .from("routes")
     .select("*")
     .order("sort_order");
 
@@ -16,30 +16,29 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const supabase = getSupabaseAdmin();
   const body = await req.json();
-  const { name, type, category, position_lat, position_lng, location, gmaps_url, hours, description, sort_order } = body;
+  const { name, type, color, weight, opacity, dash_array, label, points, sort_order } = body;
 
-  if (!name || !type || position_lat == null || position_lng == null) {
+  if (!name || !points) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
   const { data, error } = await supabase
-    .from("pois")
+    .from("routes")
     .insert({
       name,
-      type,
-      category: category || "race",
-      position_lat,
-      position_lng,
-      location: location || "",
-      gmaps_url: gmaps_url || null,
-      hours: hours || null,
-      description: description || null,
+      type: type || "course",
+      color: color || "#E8643B",
+      weight: weight ?? 6,
+      opacity: opacity ?? 0.9,
+      dash_array: dash_array || null,
+      label: label || null,
+      points,
       sort_order: sort_order ?? 0,
     })
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  invalidateCache("pois");
+  invalidateCache("routes");
   return NextResponse.json(data, { status: 201 });
 }

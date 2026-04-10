@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { cached } from "@/lib/cache";
 
-async function fetchCheckpoints() {
+async function fetchRoutes() {
   const supabase = getSupabaseAdmin();
   const { data } = await supabase
-    .from("checkpoints")
-    .select("id, name, slug, sort_order, position_lat, position_lng")
+    .from("routes")
+    .select("*")
     .eq("is_active", true)
     .order("sort_order");
 
@@ -14,6 +14,6 @@ async function fetchCheckpoints() {
 }
 
 export async function GET() {
-  const checkpoints = await cached("checkpoints", fetchCheckpoints);
-  return NextResponse.json(checkpoints);
+  const routes = await cached("routes", fetchRoutes);
+  return NextResponse.json(routes);
 }

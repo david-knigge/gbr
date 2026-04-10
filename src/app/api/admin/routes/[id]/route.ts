@@ -6,29 +6,29 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const supabase = getSupabaseAdmin();
   const { id } = await params;
   const body = await req.json();
-  const { name, type, category, position_lat, position_lng, location, gmaps_url, hours, description, is_active, sort_order } = body;
+  const { name, type, color, weight, opacity, dash_array, label, points, is_active, sort_order } = body;
 
   const { data, error } = await supabase
-    .from("pois")
+    .from("routes")
     .update({
       name,
-      type,
-      category: category || "race",
-      position_lat,
-      position_lng,
-      location: location || "",
-      gmaps_url: gmaps_url || null,
-      hours: hours || null,
-      description: description || null,
+      type: type || "course",
+      color: color || "#E8643B",
+      weight: weight ?? 6,
+      opacity: opacity ?? 0.9,
+      dash_array: dash_array || null,
+      label: label || null,
+      points,
       is_active,
       sort_order,
+      updated_at: new Date().toISOString(),
     })
     .eq("id", id)
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  invalidateCache("pois");
+  invalidateCache("routes");
   return NextResponse.json(data);
 }
 
@@ -36,9 +36,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const supabase = getSupabaseAdmin();
   const { id } = await params;
 
-  const { error } = await supabase.from("pois").delete().eq("id", id);
+  const { error } = await supabase.from("routes").delete().eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  invalidateCache("pois");
+  invalidateCache("routes");
   return NextResponse.json({ ok: true });
 }

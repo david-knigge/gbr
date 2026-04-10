@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/admin-auth";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
+import { invalidateCache } from "@/lib/cache";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -46,6 +47,8 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  invalidateCache("checkpoints");
+  invalidateCache("scan-data");
   return NextResponse.json(data);
 }
 
@@ -60,5 +63,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
   const { error } = await supabase.from("checkpoints").delete().eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  invalidateCache("checkpoints");
+  invalidateCache("scan-data");
   return NextResponse.json({ ok: true });
 }
