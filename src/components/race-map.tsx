@@ -371,7 +371,7 @@ export function RaceMap({
             >
               <Popup>
                 <PopupContent
-                  title={`Checkpoint ${(cp.sort_order != null ? cp.sort_order : i) + 1}`}
+                  title={`#${(cp.sort_order != null ? cp.sort_order : i) + 1} · ${cp.name}`}
                   details={[{
                     text: cp.is_completed
                       ? '<span style="color:#22c55e">completed</span>'
