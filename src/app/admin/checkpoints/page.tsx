@@ -33,13 +33,23 @@ export default function CheckpointsListPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Checkpoints</h1>
-        <Link
-          href="/admin/checkpoints/new"
-          className="px-4 py-2 text-sm text-white rounded"
-          style={{ backgroundColor: "#4DBFB3" }}
-        >
-          + New Checkpoint
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/admin/checkpoints/print"
+            target="_blank"
+            className="px-4 py-2 text-sm text-white rounded"
+            style={{ backgroundColor: "#E8643B" }}
+          >
+            Print QR sheets
+          </Link>
+          <Link
+            href="/admin/checkpoints/new"
+            className="px-4 py-2 text-sm text-white rounded"
+            style={{ backgroundColor: "#4DBFB3" }}
+          >
+            + New Checkpoint
+          </Link>
+        </div>
       </div>
       {rows.length === 0 ? (
         <p className="text-gray-500">No checkpoints yet.</p>
