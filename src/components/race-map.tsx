@@ -283,11 +283,16 @@ export function RaceMap({
       <MapContainer
         center={RACE_CENTER}
         zoom={DEFAULT_ZOOM}
+        maxZoom={20}
         className="w-full h-full"
         zoomControl={false}
         attributionControl={false}
       >
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          maxZoom={20}
+          maxNativeZoom={19}
+        />
         <LocationTracker onLocationFound={handleLocationFound} onDenied={() => setLocationDenied(true)} />
 
         {userPosition && (
