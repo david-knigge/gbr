@@ -254,7 +254,6 @@ export function RaceMap({
   };
 
   const courseRoutes = routes.filter((r) => r.type === "course");
-  const parkingRoutes = showCheckpoints ? [] : routes.filter((r) => r.type === "parking");
 
   // Build set of visible POI types from toggled groups
   const visiblePoiTypes = new Set(
@@ -338,7 +337,13 @@ export function RaceMap({
 
         {/* All visible routes */}
         {routes
-          .filter((r) => visibleRoutes.has(r.id))
+          .filter((r) => {
+            if (r.type === "parking") {
+              // Parking routes piggyback on the "utilities" POI group toggle
+              return !showCheckpoints && visibleGroups.has("utilities");
+            }
+            return visibleRoutes.has(r.id);
+          })
           .filter((r) => showCourses || r.type !== "course")
           .map((route) => (
             <Polyline
@@ -428,23 +433,6 @@ export function RaceMap({
                   <hr className="border-card-border" />
                 </>
               )}
-              {parkingRoutes.length > 0 && (
-                <>
-                  {parkingRoutes.map((route) => (
-                    <label key={route.id} className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={visibleRoutes.has(route.id)}
-                        onChange={() => toggleRoute(route.id)}
-                        className="rounded accent-teal w-3.5 h-3.5"
-                      />
-                      <span className="w-4 h-1 rounded-full shrink-0" style={{ background: route.color, opacity: route.opacity }} />
-                      <span className="text-xs font-medium text-foreground">{route.name}</span>
-                    </label>
-                  ))}
-                  <hr className="border-card-border" />
-                </>
-              )}
               {activeGroups.map((group) => (
                 <div key={group.key}>
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -458,6 +446,12 @@ export function RaceMap({
                   </label>
                   {visibleGroups.has(group.key) && (
                     <div className="text-[11px] text-muted space-y-1.5 pl-5.5 mt-1.5">
+                      {group.key === "utilities" && !showCheckpoints && routes.some((r) => r.type === "parking") && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-5 h-1.5 rounded-full shrink-0" style={{ background: "#5B73A8", opacity: 0.4 }} />
+                          <span>free street parking</span>
+                        </div>
+                      )}
                       {group.types.map((key) => {
                         const icon = POI_ICONS[key];
                         if (!icon) return null;
