@@ -202,7 +202,10 @@ export default function MainPage() {
             <div className="space-y-4 text-sm text-foreground mb-6">
               <div className="flex gap-3 items-start">
                 <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
-                <p><strong>find QR codes</strong> at 10 businesses along first street</p>
+                <p>
+                  <strong>find QR codes</strong> at 10 businesses along first street
+                  <span className="block text-xs text-muted mt-0.5">posted in a window or inside the shop</span>
+                </p>
               </div>
               <div className="flex gap-3 items-start">
                 <span className="w-7 h-7 rounded-lg bg-teal text-white flex items-center justify-center text-xs font-bold shrink-0">2</span>
