@@ -362,11 +362,11 @@ export function RaceMap({
             <Marker
               key={cp.id}
               position={cp.position}
-              icon={checkpointIcon(cp.is_completed, cp.sort_order != null ? cp.sort_order : i)}
+              icon={checkpointIcon(cp.is_completed, (cp.sort_order != null ? cp.sort_order : i) + 1)}
             >
               <Popup>
                 <PopupContent
-                  title={`#${cp.sort_order != null ? cp.sort_order : i} ${cp.name}`}
+                  title={`Checkpoint ${(cp.sort_order != null ? cp.sort_order : i) + 1}`}
                   details={[{
                     text: cp.is_completed
                       ? '<span style="color:#22c55e">completed</span>'

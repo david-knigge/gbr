@@ -273,11 +273,11 @@ export default function PrintCheckpointsPage() {
               </div>
             </div>
 
-            <div className="eyebrow">
-              STEAM Quest · Stop <span className="stopnum">#{idx + 1}</span>
+            <div className="eyebrow">STEAM Quest Checkpoint</div>
+            <div className="title">
+              Checkpoint <span className="stopnum">{idx + 1}</span>
             </div>
-            <div className="title">{c.name}</div>
-            {c.description && <div className="subtitle">{c.description}</div>}
+            <div className="subtitle">Scan this code to answer a STEAM question and earn a raffle entry!</div>
 
             <div className="qrwrap">
               {/* External QR image — loaded at print time */}
@@ -292,9 +292,7 @@ export default function PrintCheckpointsPage() {
 
             <div className="footer">
               <span className="pill">Great Benicia Run</span>
-              <span>
-                Stop #{idx + 1} of {rows.length} · {c.slug}
-              </span>
+              <span>Checkpoint {idx + 1}</span>
             </div>
           </div>
         );
