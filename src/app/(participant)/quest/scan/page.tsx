@@ -78,6 +78,15 @@ export default function ScanPage() {
 
   return (
     <div className="absolute inset-0 z-[500] bg-background overflow-y-auto px-5 pt-8 space-y-5 pb-24">
+      <button
+        onClick={() => router.push("/")}
+        aria-label="close"
+        className="absolute top-4 right-4 w-10 h-10 rounded-full bg-card border border-card-border flex items-center justify-center text-muted hover:text-foreground z-10"
+      >
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
       <div className="text-center">
         <h1 className="text-2xl font-bold text-foreground tracking-tight">scan checkpoint</h1>
         <p className="text-sm text-muted mt-1 font-medium">

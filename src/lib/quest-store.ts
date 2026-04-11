@@ -54,6 +54,14 @@ export function markCheckpointScanned(checkpointId: string, name: string) {
   }
 }
 
+export function clearCheckpointScan(checkpointId: string) {
+  const progress = load();
+  if (progress.checkpoints[checkpointId] && !progress.checkpoints[checkpointId].question_answered) {
+    delete progress.checkpoints[checkpointId];
+    save(progress);
+  }
+}
+
 export function markQuestionAnswered(checkpointId: string, correct: boolean) {
   const progress = load();
   const cp = progress.checkpoints[checkpointId];

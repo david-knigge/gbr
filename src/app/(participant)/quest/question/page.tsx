@@ -4,7 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { markQuestionAnswered, getCompletedCount } from "@/lib/quest-store";
+import { markQuestionAnswered, getCompletedCount, clearCheckpointScan } from "@/lib/quest-store";
 
 function QuestionContent() {
   const router = useRouter();

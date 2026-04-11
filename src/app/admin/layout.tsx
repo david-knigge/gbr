@@ -49,6 +49,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return <>{children}</>;
   }
 
+  if (pathname === "/admin/checkpoints/print") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <aside className="w-56 bg-gray-900 text-gray-100 flex flex-col">

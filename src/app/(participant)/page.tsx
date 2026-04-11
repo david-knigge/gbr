@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { QuestOverlay } from "@/components/quest-overlay";
 import { getCompletedCount, getScannedCount } from "@/lib/quest-store";
 
 const RaceMap = dynamic(
@@ -26,6 +26,12 @@ export default function MainPage() {
   const [questIntroShown, setQuestIntroShown] = useState(false);
   const [scanned, setScanned] = useState(0);
   const [completed, setCompleted] = useState(0);
+  const [questOverlayOpen, setQuestOverlayOpen] = useState(false);
+
+  function refreshQuestCounts() {
+    setScanned(getScannedCount());
+    setCompleted(getCompletedCount());
+  }
 
   // Show race info on mount
   useEffect(() => {
@@ -121,14 +127,12 @@ export default function MainPage() {
       {!showQuestIntro && !showIntro && (
         <div className="absolute bottom-20 left-4 right-4 z-[1000] flex items-center justify-center gap-2">
           {mode === "quest" && (
-            <Link href="/quest/scan">
-              <Button variant="primary" size="md">
-                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                </svg>
-                scan checkpoint
-              </Button>
-            </Link>
+            <Button variant="primary" size="md" onClick={() => setQuestOverlayOpen(true)}>
+              <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+              </svg>
+              scan checkpoint
+            </Button>
           )}
           <Button
             variant="accent"
@@ -272,6 +276,14 @@ export default function MainPage() {
           </div>
         </div>
       )}
+
+      <QuestOverlay
+        open={questOverlayOpen}
+        onClose={() => {
+          setQuestOverlayOpen(false);
+          refreshQuestCounts();
+        }}
+      />
     </>
   );
 }
