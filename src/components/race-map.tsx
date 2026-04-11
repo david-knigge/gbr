@@ -446,12 +446,6 @@ export function RaceMap({
                   </label>
                   {visibleGroups.has(group.key) && (
                     <div className="text-[11px] text-muted space-y-1.5 pl-5.5 mt-1.5">
-                      {group.key === "utilities" && !showCheckpoints && routes.some((r) => r.type === "parking") && (
-                        <div className="flex items-center gap-2">
-                          <span className="w-5 h-1.5 rounded-full shrink-0" style={{ background: "#5B73A8", opacity: 0.4 }} />
-                          <span>free street parking</span>
-                        </div>
-                      )}
                       {group.types.map((key) => {
                         const icon = POI_ICONS[key];
                         if (!icon) return null;
@@ -474,6 +468,14 @@ export function RaceMap({
                           </div>
                         );
                       })}
+                      {group.key === "utilities" && !showCheckpoints && routes.some((r) => r.type === "parking") && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-5 flex items-center justify-center shrink-0">
+                            <span className="w-5 h-1.5 rounded-full" style={{ background: "#5B73A8", opacity: 0.4 }} />
+                          </span>
+                          <span>free street parking</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
