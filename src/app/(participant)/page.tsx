@@ -27,10 +27,12 @@ export default function MainPage() {
   const [scanned, setScanned] = useState(0);
   const [completed, setCompleted] = useState(0);
   const [questOverlayOpen, setQuestOverlayOpen] = useState(false);
+  const [questVersion, setQuestVersion] = useState(0);
 
   function refreshQuestCounts() {
     setScanned(getScannedCount());
     setCompleted(getCompletedCount());
+    setQuestVersion((v) => v + 1);
   }
 
   // Show race info on mount
@@ -73,6 +75,7 @@ export default function MainPage() {
           showPOIs={mode === "race" || mode === "visitor"}
           poiCategory={mode === "visitor" ? "visitor" : "race"}
           showCheckpoints={mode === "quest"}
+          questVersion={questVersion}
         />
       </div>
 

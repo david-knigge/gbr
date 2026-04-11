@@ -171,6 +171,7 @@ interface RaceMapProps {
   showPOIs?: boolean;
   poiCategory?: "race" | "visitor";
   showCheckpoints?: boolean;
+  questVersion?: number;
 }
 
 export function RaceMap({
@@ -179,6 +180,7 @@ export function RaceMap({
   showPOIs = true,
   poiCategory = "race",
   showCheckpoints = false,
+  questVersion = 0,
 }: RaceMapProps) {
   const [userPosition, setUserPosition] = useState<[number, number] | null>(null);
   const [routes, setRoutes] = useState<LoadedRoute[]>([]);
@@ -229,6 +231,14 @@ export function RaceMap({
       })
       .catch(() => {});
   }, [showCheckpoints]);
+
+  // Refresh completion state when questVersion changes (e.g. after closing the quest overlay)
+  useEffect(() => {
+    if (!showCheckpoints || questVersion === 0) return;
+    setCheckpoints((prev) =>
+      prev.map((cp) => ({ ...cp, is_completed: isCheckpointScanned(cp.id) }))
+    );
+  }, [questVersion, showCheckpoints]);
 
   const handleLocationFound = useCallback((pos: [number, number]) => {
     setUserPosition(pos);

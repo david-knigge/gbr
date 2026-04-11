@@ -167,7 +167,7 @@ export function QuestOverlay({ open, onClose }: Props) {
         <div className="space-y-5">
           <div className="text-center">
             <p className="text-xs font-bold text-teal">
-              checkpoint {(phase.checkpoint.sort_order ?? 0) + 1}
+              {phase.checkpoint.name.toLowerCase()}
             </p>
           </div>
 
