@@ -142,12 +142,20 @@ export default function PrintCheckpointsPage() {
         }
         .eyebrow {
           margin-top: 18mm;
-          font-size: 14px;
+          font-size: 15px;
           letter-spacing: 0.22em;
           text-transform: uppercase;
           color: var(--accent);
           font-weight: 700;
           z-index: 1;
+        }
+        .eyebrow .steam {
+          background: var(--teal);
+          color: white;
+          padding: 4px 10px;
+          border-radius: 6px;
+          letter-spacing: 0.15em;
+          margin-right: 8px;
         }
         .title {
           margin-top: 6mm;
@@ -273,11 +281,17 @@ export default function PrintCheckpointsPage() {
               </div>
             </div>
 
-            <div className="eyebrow">STEAM Quest Checkpoint</div>
+            <div className="eyebrow">
+              <span className="steam">S·T·E·A·M</span> Quest
+            </div>
             <div className="title">
               Checkpoint <span className="stopnum">{idx + 1}</span>
             </div>
-            <div className="subtitle">Scan this code to answer a STEAM question and earn a raffle entry!</div>
+            <div className="subtitle">
+              Science · Technology · Engineering · Art · Math
+              <br />
+              Scan the code, answer the question, and collect all 10 for a reward at packet pickup!
+            </div>
 
             <div className="qrwrap">
               {/* External QR image — loaded at print time */}
@@ -286,7 +300,7 @@ export default function PrintCheckpointsPage() {
             </div>
 
             <div className="cta">
-              Scan to play <span className="arrow">→</span> earn a raffle entry
+              Scan to play the STEAM Quest <span className="arrow">→</span>
             </div>
             <div className="url">{scanUrl}</div>
 
