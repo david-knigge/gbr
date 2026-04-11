@@ -47,6 +47,11 @@ export default function PrintCheckpointsPage() {
         body {
           background: #f3f4f6;
         }
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
         .print-root {
           --cream: #fdf8ef;
           --ink: #1f2a3a;
